@@ -1,2 +1,2 @@
-cython
-gensim
+cython==0.29.3
+gensim==3.7.0
