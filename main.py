@@ -102,7 +102,7 @@ def train_model_on_steam_data():
 
 def test_word(model, query_word='anime'):
     similar_words = model.wv.most_similar(positive=query_word)
-    print('\nWord: {}'.format(query_word))
+    print('\nThe most similar words to the word "{}":'.format(query_word))
     pprint(similar_words)
 
     return
@@ -111,7 +111,7 @@ def test_word(model, query_word='anime'):
 def main():
     model = load_model()
 
-    for query_word in ['anime', 'fun']:
+    for query_word in ['anime', 'fun', 'violent']:
         test_word(model, query_word)
 
 
