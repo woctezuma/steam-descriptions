@@ -11,12 +11,16 @@ This repository contains Python code to retrieve semantically similar Steam game
 ## Requirements
 
 - Install the latest version of [Python 3.X](https://www.python.org/downloads/).
-
 - Install the required packages:
 
 ```bash
 pip install -r requirements.txt
 ```
+
+## References
+
+- [Tutorial on the official website of 'gensim' module](https://radimrehurek.com/gensim/models/word2vec.html)
+- [Tutorial on a blog](http://kavita-ganesan.com/gensim-word2vec-tutorial-starter-code/)
 
 <!-- Definitions -->
 
