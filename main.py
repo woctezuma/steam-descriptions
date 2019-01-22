@@ -93,7 +93,7 @@ def train_model_on_steam_data():
 
     model = initialize_model(documents)
 
-    model.train(documents, total_examples=len(documents), epochs=1)
+    model.train(documents, total_examples=len(documents), epochs=10)
 
     save_model(model)
 
