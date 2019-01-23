@@ -65,6 +65,14 @@ def load_tokens(data=None):
     return steam_texts
 
 
+def load_corpus():
+    steam_texts = load_tokens()
+
+    documents = list(steam_texts.values())
+
+    return documents
+
+
 def initialize_model(steam_texts):
     model = Word2Vec(steam_texts)
 
@@ -90,9 +98,7 @@ def load_model(model_name=None):
 
 
 def train_model_on_steam_data():
-    steam_texts = load_tokens()
-
-    documents = list(steam_texts.values())
+    documents = load_corpus()
 
     model = initialize_model(documents)
 
