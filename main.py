@@ -160,6 +160,8 @@ def filter_out_words_not_in_vocabulary(tokenized_sentence, index2word_set):
 
 
 def main():
+    steamspy_database = steamspypi.load()
+
     steam_texts = load_tokens()
     steam_texts = filter_tokens(steam_texts)
     documents = list(steam_texts.values())
@@ -172,15 +174,14 @@ def main():
     for query_word in ['anime', 'fun', 'violent']:
         test_word(model, query_word)
 
-    query_app_id = '583950'
+    query_app_id = '583950' # Artifact
+    # query_app_id = '531640' # Eternal
     query_sentence = filter_out_words_not_in_vocabulary(steam_texts[query_app_id], index2word_set)
 
     sim = {}
     for app_id in steam_texts:
         reference_sentence = filter_out_words_not_in_vocabulary(steam_texts[app_id], index2word_set)
         sim[app_id] = model.wv.n_similarity(query_sentence, reference_sentence)
-
-    steamspy_database = steamspypi.load()
 
     counter = 0
     for app_id, sim_value in sorted(sim.items(), key=operator.itemgetter(1), reverse=True):
