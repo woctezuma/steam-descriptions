@@ -91,12 +91,6 @@ def load_corpus():
     return documents
 
 
-def initialize_model(steam_texts):
-    model = Word2Vec(steam_texts)
-
-    return model
-
-
 def save_model(model, model_name=None):
     if model_name is None:
         model_name = get_data_folder() + get_model_file_name()
@@ -115,12 +109,13 @@ def load_model(model_name=None):
     return model
 
 
-def train_model_on_steam_data():
-    documents = load_corpus()
+def train_model_on_steam_data(documents=None, num_epochs=10):
+    if documents is None:
+        documents = load_corpus()
 
-    model = initialize_model(documents)
+    model = Word2Vec(documents)
 
-    model.train(documents, total_examples=len(documents), epochs=10)
+    model.train(documents, total_examples=len(documents), epochs=num_epochs)
 
     save_model(model)
 
