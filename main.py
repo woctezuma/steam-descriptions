@@ -186,7 +186,7 @@ def main():
     for app_id in steam_texts:
         counter += 1
         if (counter % 1000) == 0:
-        print('[{}/{}] appID = {} ({})'.format(counter, num_games, app_id, data[app_id]['name']))
+            print('[{}/{}] appID = {} ({})'.format(counter, num_games, app_id, data[app_id]['name']))
         reference_sentence = filter_out_words_not_in_vocabulary(steam_texts[app_id], index2word_set)
         sim[app_id] = model.wv.n_similarity(query_sentence, reference_sentence)
 
