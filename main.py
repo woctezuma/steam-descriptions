@@ -42,6 +42,9 @@ def load_tokens(data=None):
     except FileNotFoundError:
         print('Computing')
 
+        if data is None:
+            data = load_data()
+
         counter = 0
         num_games = len(data)
 
