@@ -65,8 +65,26 @@ def load_tokens(data=None):
     return steam_texts
 
 
+def filter_tokens(steam_texts):
+    filtered_steam_texts = {}
+
+    print('Filtering tokens')
+    characters_to_filter = ['_']
+
+    for app_id in steam_texts:
+        tokens = steam_texts[app_id]
+
+        filtered_tokens = [word for word in tokens if all(character not in word for character in characters_to_filter)]
+
+        filtered_steam_texts[app_id] = filtered_tokens
+
+    return filtered_steam_texts
+
+
 def load_corpus():
     steam_texts = load_tokens()
+
+    steam_texts = filter_tokens(steam_texts)
 
     documents = list(steam_texts.values())
 
