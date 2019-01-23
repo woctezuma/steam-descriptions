@@ -25,7 +25,7 @@ def get_model_file_name():
     return file_name
 
 
-def load_data():
+def load_raw_data():
     with open(get_data_folder() + get_raw_data_file_name(), 'r') as f:
         data = json.load(f)
 
@@ -43,7 +43,7 @@ def load_tokens(data=None):
         print('Computing')
 
         if data is None:
-            data = load_data()
+            data = load_raw_data()
 
         counter = 0
         num_games = len(data)
