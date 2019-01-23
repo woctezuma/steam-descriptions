@@ -1,6 +1,7 @@
 import json
 from pprint import pprint
 
+import numpy as np
 from gensim.models import Word2Vec
 from gensim.utils import simple_preprocess
 
@@ -130,7 +131,37 @@ def test_word(model, query_word='anime'):
     return
 
 
+def avg_feature_vector(tokenized_sentence, model, num_features=None, index2word_set=None):
+    # Reference: https://stackoverflow.com/a/35092200
+
+    if index2word_set is None:
+        # Vocabulary
+        index2word_set = set(model.wv.index2word)
+
+    if num_features is None:
+        num_features = model.wv.vector_size
+
+    feature_vec = np.zeros((num_features,), dtype='float32')
+    n_words = 0
+    for word in tokenized_sentence:
+        if word in index2word_set:
+            n_words += 1
+            feature_vec = np.add(feature_vec, model.wv[word])
+    if n_words > 0:
+        feature_vec = np.divide(feature_vec, n_words)
+    return feature_vec
+
+
+def filter_out_words_not_in_vocabulary(tokenized_sentence, index2word_set):
+    filtered_tokenized_sentence = [word for word in tokenized_sentence if word in index2word_set]
+    return filtered_tokenized_sentence
+
+
 def main():
+    steam_texts = load_tokens()
+    steam_texts = filter_tokens(steam_texts)
+    documents = list(steam_texts.values())
+
     model = load_model()
 
     # Vocabulary
@@ -138,6 +169,15 @@ def main():
 
     for query_word in ['anime', 'fun', 'violent']:
         test_word(model, query_word)
+
+    app_id_1 = '583950'
+    app_id_2 = '531640'
+
+    s1_afv = filter_out_words_not_in_vocabulary(steam_texts[app_id_1], index2word_set)
+    s2_afv = filter_out_words_not_in_vocabulary(steam_texts[app_id_2], index2word_set)
+
+    sim = model.wv.n_similarity(s1_afv, s2_afv)
+    print(sim)
 
 
 if __name__ == '__main__':
