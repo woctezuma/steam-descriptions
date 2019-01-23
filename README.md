@@ -10,8 +10,8 @@ This repository contains Python code to retrieve semantically similar Steam game
 
 ## Requirements
 
-- Install the latest version of [Python 3.X](https://www.python.org/downloads/).
-- Install the required packages:
+-   Install the latest version of [Python 3.X](https://www.python.org/downloads/).
+-   Install the required packages:
 
 ```bash
 pip install -r requirements.txt
@@ -19,8 +19,8 @@ pip install -r requirements.txt
 
 ## References
 
-- [Tutorial on the official website of 'gensim' module](https://radimrehurek.com/gensim/models/word2vec.html)
-- [Tutorial on a blog](http://kavita-ganesan.com/gensim-word2vec-tutorial-starter-code/)
+-   [Tutorial on the official website of 'gensim' module](https://radimrehurek.com/gensim/models/word2vec.html)
+-   [Tutorial on a blog](http://kavita-ganesan.com/gensim-word2vec-tutorial-starter-code/)
 
 <!-- Definitions -->
 
@@ -36,4 +36,3 @@ pip install -r requirements.txt
 
 [codacy]: <https://www.codacy.com/app/woctezuma/steam-descriptions>
 [codacy-image]: <https://api.codacy.com/project/badge/Grade/710292a19eff45e08a53e8b0028e02d4>
-
