@@ -114,6 +114,9 @@ def test_word(model, query_word='anime'):
 def main():
     model = load_model()
 
+    # Vocabulary
+    index2word_set = set(model.wv.index2word)
+
     for query_word in ['anime', 'fun', 'violent']:
         test_word(model, query_word)
 
