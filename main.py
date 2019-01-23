@@ -1,7 +1,9 @@
 import json
+import operator
 from pprint import pprint
 
 import numpy as np
+import steamspypi
 from gensim.models import Word2Vec
 from gensim.utils import simple_preprocess
 
@@ -170,14 +172,35 @@ def main():
     for query_word in ['anime', 'fun', 'violent']:
         test_word(model, query_word)
 
-    app_id_1 = '583950'
-    app_id_2 = '531640'
+    query_app_id = '583950'
+    query_sentence = filter_out_words_not_in_vocabulary(steam_texts[query_app_id], index2word_set)
 
-    s1_afv = filter_out_words_not_in_vocabulary(steam_texts[app_id_1], index2word_set)
-    s2_afv = filter_out_words_not_in_vocabulary(steam_texts[app_id_2], index2word_set)
+    sim = {}
+    for app_id in steam_texts:
+        reference_sentence = filter_out_words_not_in_vocabulary(steam_texts[app_id], index2word_set)
+        sim[app_id] = model.wv.n_similarity(query_sentence, reference_sentence)
 
-    sim = model.wv.n_similarity(s1_afv, s2_afv)
-    print(sim)
+    steamspy_database = steamspypi.load()
+
+    counter = 0
+    for app_id, sim_value in sorted(sim.items(), key=operator.itemgetter(1), reverse=True):
+        try:
+            game_name = steamspy_database[app_id]['name']
+        except KeyError:
+            game_name = 'n/a'
+
+        store_url = '[URL=https://store.steampowered.com/app/' + app_id + ' ]' + app_id + '[/URL]'
+
+        if app_id == query_app_id:
+            print('Query appID: {} ({})'.format(store_url, game_name))
+            print('\nTop similar games:')
+            continue
+        else:
+            counter += 1
+            print('{:2}) appID: {} ({})'.format(counter, store_url, game_name))
+
+        if counter >= 10:
+            break
 
 
 if __name__ == '__main__':
