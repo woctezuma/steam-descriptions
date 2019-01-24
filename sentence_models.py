@@ -1,3 +1,4 @@
+import math
 import operator
 
 import numpy as np
@@ -80,25 +81,28 @@ def print_most_similar_sentences(similarity_scores, num_items_displayed=10, game
 
     sorted_similarity_scores = sorted(similarity_scores.items(), key=operator.itemgetter(1), reverse=True)
 
+    similar_app_ids = []
+
     for app_id, sim_value in sorted_similarity_scores:
 
         store_url = get_store_url_as_bb_code(app_id)
 
-        if counter == 0:
+        if math.isclose(sim_value, 1):
             print('Query appID: {} ({})'.format(store_url, game_names[app_id]))
             print('\n\nTop similar games:')
         else:
+            counter += 1
             print('{:2}) appID: {} ({})'.format(counter, store_url, game_names[app_id]))
+            similar_app_ids.append(app_id)
 
-        counter += 1
-
-        if counter > num_items_displayed:
+        if counter >= num_items_displayed:
             break
 
-    return
+    return similar_app_ids
 
 
 if __name__ == '__main__':
     query_app_id = '583950'  # Artifact
     similarity_scores = compute_similarity_with_all_other_steam_sentences(query_app_id)
-    print_most_similar_sentences(similarity_scores)
+    similar_app_ids = print_most_similar_sentences(similarity_scores)
+    print(similar_app_ids)
