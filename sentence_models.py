@@ -90,7 +90,7 @@ def print_most_similar_sentences(similarity_scores, num_items_displayed=10, game
             print('\nQuery appID: {} ({})'.format(store_url, game_names[app_id]))
             print('Top similar games:')
         else:
-            print('{:2}) appID: {} ({})'.format(counter, store_url, game_names[app_id]))
+            print('{:2}) similarity: {:.1%} ; appID: {} ({})'.format(counter, sim_value, store_url, game_names[app_id]))
             similar_app_ids.append(app_id)
 
         counter += 1
