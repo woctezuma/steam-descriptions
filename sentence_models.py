@@ -96,6 +96,7 @@ def print_most_similar_sentences(similarity_scores, num_items_displayed=10, game
         counter += 1
 
         if counter > num_items_displayed:
+            print()
             break
 
     return similar_app_ids
