@@ -5,7 +5,7 @@ from utils import load_tokens, get_doc_model_file_name
 from word_model import compute_similarity_using_word2vec_model
 
 
-def main(train_from_scratch=False):
+def main(train_from_scratch=False, enforce_training=False):
     steam_tokens = load_tokens()
 
     if train_from_scratch:
@@ -16,7 +16,8 @@ def main(train_from_scratch=False):
         print('Loading previous Doc2Vec model.')
         model = doc2vec.Doc2Vec.load(get_doc_model_file_name())
 
-    model = train_doc_model_on_steam_tokens(model=model, steam_tokens=steam_tokens, num_epochs=30)
+    if enforce_training:
+        model = train_doc_model_on_steam_tokens(model=model, steam_tokens=steam_tokens, num_epochs=100)
 
     # Test doc2vec
     for query_app_id in ['583950', '531640', '364470', '292030']:
