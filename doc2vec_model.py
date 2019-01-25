@@ -93,6 +93,15 @@ def compute_similarity_using_doc2vec_model(query_app_id, steam_tokens=None, mode
     return similarity_scores
 
 
+def check_analogy(model, pos, neg):
+    similarity_scores_as_tuples = model.docvecs.most_similar(positive=pos, negative=neg, topn=20)
+
+    similarity_scores = reformat_similarity_scores_for_doc2vec(similarity_scores_as_tuples)
+    print_most_similar_sentences(similarity_scores, num_items_displayed=3, is_query_included=False)
+
+    return
+
+
 if __name__ == '__main__':
     steam_tokens = load_tokens()
 
