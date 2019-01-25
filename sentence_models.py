@@ -87,8 +87,8 @@ def print_most_similar_sentences(similarity_scores, num_items_displayed=10, game
         store_url = get_store_url_as_bb_code(app_id)
 
         if counter == 0:
-            print('Query appID: {} ({})'.format(store_url, game_names[app_id]))
-            print('\n\nTop similar games:')
+            print('\nQuery appID: {} ({})'.format(store_url, game_names[app_id]))
+            print('Top similar games:')
         else:
             print('{:2}) appID: {} ({})'.format(counter, store_url, game_names[app_id]))
             similar_app_ids.append(app_id)
