@@ -72,7 +72,7 @@ def get_store_url_as_bb_code(app_id):
     return store_url
 
 
-def print_most_similar_sentences(similarity_scores, num_items_displayed=10, game_names=None):
+def print_most_similar_sentences(similarity_scores, num_items_displayed=10, game_names=None, is_query_included=True):
     if game_names is None:
         game_names = load_game_names()
 
@@ -86,10 +86,12 @@ def print_most_similar_sentences(similarity_scores, num_items_displayed=10, game
 
         store_url = get_store_url_as_bb_code(app_id)
 
-        if counter == 0:
+        if counter == 0 and is_query_included:
             print('\nQuery appID: {} ({})'.format(store_url, game_names[app_id]))
             print('Top similar games:')
         else:
+            if counter == 0:
+                print('Top similar games:')
             print('{:2}) similarity: {:.1%} ; appID: {} ({})'.format(counter, sim_value, store_url, game_names[app_id]))
             similar_app_ids.append(app_id)
 
