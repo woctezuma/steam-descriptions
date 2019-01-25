@@ -23,6 +23,11 @@ def get_word_model_file_name():
     return file_name
 
 
+def get_doc_model_file_name():
+    file_name = get_data_folder() + 'doc2vec.model'
+    return file_name
+
+
 def load_raw_data():
     print('Loading raw data')
 
