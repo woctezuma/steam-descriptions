@@ -15,7 +15,7 @@ def main(train_from_scratch=True, enforce_training=False):
         print('Creating a new Doc2Vec model from scratch.')
         documents = list(read_corpus(steam_tokens))
         model = doc2vec.Doc2Vec(documents,
-                                dm=1, vector_size=100, window=5, min_count=5,
+                                num_epochs=20,
                                 workers=multiprocessing.cpu_count())
     else:
         print('Loading previous Doc2Vec model.')
