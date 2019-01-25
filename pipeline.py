@@ -20,7 +20,9 @@ def main(train_from_scratch=False, enforce_training=False):
         model = train_doc_model_on_steam_tokens(model=model, steam_tokens=steam_tokens, num_epochs=100)
 
     # Test doc2vec
-    for query_app_id in ['583950', '531640', '364470', '292030']:
+    for query_app_id in ['10', '620', '105600', '264710', '292030', '294100', '364470', '504230', '519860', '531640',
+                         '560130', '582010', '583950', '588650', '590380', '620980', '638970', '644560', '646570',
+                         '653530', '683320', '698780', '731490', '742120', '812140', '863550', '973760']:
         compute_similarity_using_doc2vec_model(query_app_id, steam_tokens, model, avoid_inference=True)
 
     # Check the relevance of the corresponding word2vec
