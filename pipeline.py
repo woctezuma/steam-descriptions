@@ -17,7 +17,7 @@ def main(train_from_scratch=False, enforce_training=False):
         model = doc2vec.Doc2Vec.load(get_doc_model_file_name())
 
     if enforce_training:
-        model = train_doc_model_on_steam_tokens(model=model, steam_tokens=steam_tokens, num_epochs=100)
+        model = train_doc_model_on_steam_tokens(model=model, steam_tokens=steam_tokens, num_epochs=20)
 
     # Test doc2vec
     for query_app_id in ['10', '620', '105600', '264710', '292030', '294100', '364470', '504230', '519860', '531640',
