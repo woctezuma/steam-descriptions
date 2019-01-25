@@ -69,7 +69,7 @@ def compute_similarity_using_doc2vec_model(query_app_id, steam_tokens=None, mode
     if avoid_inference:
         print('Finding most similar documents based on the query appID.')
         # For games which are part of the training corpus, we do not need to call model.infer_vector()
-        similarity_scores_as_tuples = model.docvecs.most_similar(positive=query_app_id)
+        similarity_scores_as_tuples = model.docvecs.most_similar(positive=int(query_app_id))
     else:
         print('Finding most similar documents based on an inferred vector, which represents the query document.')
         query = steam_tokens[query_app_id]
