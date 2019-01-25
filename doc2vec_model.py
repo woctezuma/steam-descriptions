@@ -50,7 +50,7 @@ def train_doc_model_on_steam_tokens(model=None, steam_tokens=None, num_epochs=10
 
 
 def compute_similarity_using_doc2vec_model(query_app_id, steam_tokens=None, model=None,
-                                           enforce_training=False):
+                                           enforce_training=False, avoid_inference=False):
     if steam_tokens is None:
         steam_tokens = load_tokens()
 
@@ -66,10 +66,17 @@ def compute_similarity_using_doc2vec_model(query_app_id, steam_tokens=None, mode
             print('Training Doc2Vec model from scratch.')
             model = train_doc_model_on_steam_tokens(model=None, steam_tokens=steam_tokens)
 
-    query = steam_tokens[query_app_id]
-
-    inferred_vector = model.infer_vector(query)
-    similarity_scores_as_tuples = model.docvecs.most_similar([inferred_vector])
+    if avoid_inference:
+        print('Finding most similar documents based on the query appID.')
+        # For games which are part of the training corpus, we do not need to call model.infer_vector()
+        similarity_scores_as_tuples = model.docvecs.most_similar(positive=query_app_id)
+    else:
+        print('Finding most similar documents based on an inferred vector, which represents the query document.')
+        query = steam_tokens[query_app_id]
+        # Caveat: « Subsequent calls to this function may infer different representations for the same document. »
+        # Reference: https://radimrehurek.com/gensim/models/doc2vec.html#gensim.models.doc2vec.Doc2Vec.infer_vector
+        inferred_vector = model.infer_vector(query)
+        similarity_scores_as_tuples = model.docvecs.most_similar([inferred_vector])
 
     similarity_scores = reformat_similarity_scores_for_doc2vec(similarity_scores_as_tuples)
     print_most_similar_sentences(similarity_scores)
@@ -84,7 +91,7 @@ if __name__ == '__main__':
 
     # Test doc2vec
     for query_app_id in ['583950', '531640', '364470', '292030']:
-        compute_similarity_using_doc2vec_model(query_app_id, steam_tokens, model)
+        compute_similarity_using_doc2vec_model(query_app_id, steam_tokens, model, avoid_inference=False)
 
     # Check the relevance of the corresponding word2vec
     for query_word in ['anime', 'fun', 'violent']:

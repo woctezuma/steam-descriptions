@@ -21,7 +21,7 @@ def main(train_from_scratch=False, enforce_training=False):
 
     # Test doc2vec
     for query_app_id in ['583950', '531640', '364470', '292030']:
-        compute_similarity_using_doc2vec_model(query_app_id, steam_tokens, model)
+        compute_similarity_using_doc2vec_model(query_app_id, steam_tokens, model, avoid_inference=True)
 
     # Check the relevance of the corresponding word2vec
     for query_word in ['anime', 'fun', 'violent']:
