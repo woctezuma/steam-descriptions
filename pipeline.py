@@ -1,3 +1,5 @@
+import multiprocessing
+
 from gensim.models import doc2vec
 
 from doc2vec_model import compute_similarity_using_doc2vec_model, train_doc_model_on_steam_tokens, read_corpus
@@ -11,7 +13,9 @@ def main(train_from_scratch=True, enforce_training=True):
     if train_from_scratch:
         print('Creating a new Doc2Vec model from scratch.')
         documents = list(read_corpus(steam_tokens))
-        model = doc2vec.Doc2Vec(documents)
+        model = doc2vec.Doc2Vec(documents,
+                                dm=1, vector_size=100, window=5, min_count=5,
+                                workers=multiprocessing.cpu_count())
     else:
         print('Loading previous Doc2Vec model.')
         model = doc2vec.Doc2Vec.load(get_doc_model_file_name())
