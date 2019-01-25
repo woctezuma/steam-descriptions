@@ -50,7 +50,7 @@ def train_doc_model_on_steam_tokens(model=None, steam_tokens=None, num_epochs=10
 
 
 def compute_similarity_using_doc2vec_model(query_app_id, steam_tokens=None, model=None,
-                                           enforce_training=False, avoid_inference=False):
+                                           enforce_training=False, avoid_inference=False, num_items_displayed=10):
     if steam_tokens is None:
         steam_tokens = load_tokens()
 
@@ -69,7 +69,9 @@ def compute_similarity_using_doc2vec_model(query_app_id, steam_tokens=None, mode
     if avoid_inference:
         print('Finding most similar documents based on the query appID.')
         # For games which are part of the training corpus, we do not need to call model.infer_vector()
-        similarity_scores_as_tuples = model.docvecs.most_similar(positive=int(query_app_id))
+
+        num_items_retrieved = max(4 * num_items_displayed, 20)
+        similarity_scores_as_tuples = model.docvecs.most_similar(positive=int(query_app_id), topn=num_items_retrieved)
 
         # Hack for display with print_most_similar_sentences():
         # if model.docvecs.most_similar() is called with an integer doctag found in the training set,
@@ -86,7 +88,7 @@ def compute_similarity_using_doc2vec_model(query_app_id, steam_tokens=None, mode
         similarity_scores_as_tuples = model.docvecs.most_similar([inferred_vector])
 
     similarity_scores = reformat_similarity_scores_for_doc2vec(similarity_scores_as_tuples)
-    print_most_similar_sentences(similarity_scores)
+    print_most_similar_sentences(similarity_scores, num_items_displayed=num_items_displayed)
 
     return similarity_scores
 
