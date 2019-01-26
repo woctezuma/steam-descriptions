@@ -1,3 +1,4 @@
+import logging
 import multiprocessing
 
 from gensim.models import doc2vec
@@ -9,6 +10,8 @@ from word_model import compute_similarity_using_word2vec_model
 
 
 def main(train_from_scratch=True, enforce_training=False):
+    logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+
     steam_tokens = load_tokens()
 
     if train_from_scratch:
