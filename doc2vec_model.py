@@ -1,3 +1,5 @@
+import logging
+import multiprocessing
 from time import time
 
 from gensim.models import doc2vec
@@ -32,13 +34,16 @@ def reformat_similarity_scores_for_doc2vec(similarity_scores_as_tuples, game_nam
 
 
 def train_doc_model_on_steam_tokens(model=None, steam_tokens=None, num_epochs=10):
+    # You do not want to perform training this way, because training already happened when initializating the model
+    # with Doc2Vec(documents). Moreover, calling train() several times messes with decay of learning rate alpha!
+
     if steam_tokens is None:
         steam_tokens = load_tokens()
 
     documents = list(read_corpus(steam_tokens))
 
     if model is None:
-        model = doc2vec.Doc2Vec(documents)
+        model = doc2vec.Doc2Vec(documents)  # training happens with 5 epochs (default) here
 
     start = time()
     model.train(documents, total_examples=len(documents), epochs=num_epochs)
