@@ -108,9 +108,21 @@ def check_analogy(model, pos, neg):
 
 
 if __name__ == '__main__':
+    train_from_scratch = False
+
+    logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+
     steam_tokens = load_tokens()
 
-    model = doc2vec.Doc2Vec.load(get_doc_model_file_name())
+    if train_from_scratch:
+        print('Creating a new Doc2Vec model from scratch.')
+        documents = list(read_corpus(steam_tokens))
+        model = doc2vec.Doc2Vec(documents,
+                                num_epochs=20,
+                                workers=multiprocessing.cpu_count())
+    else:
+        print('Loading previous Doc2Vec model.')
+        model = doc2vec.Doc2Vec.load(get_doc_model_file_name())
 
     # Test doc2vec
     for query_app_id in ['10', '620', '105600', '264710', '292030', '294100', '364470', '504230', '519860', '531640',
