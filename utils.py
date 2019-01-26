@@ -29,8 +29,9 @@ def get_doc_model_file_name():
     return file_name
 
 
-def load_raw_data():
-    print('Loading raw data')
+def load_raw_data(verbose=False):
+    if verbose:
+        print('Loading raw data')
 
     with open(get_raw_data_file_name(), 'r') as f:
         steam_sentences = json.load(f)

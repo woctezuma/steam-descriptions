@@ -43,7 +43,8 @@ def reformat_similarity_scores_for_doc2vec(similarity_scores_as_tuples, game_nam
         else:
             dummy_app_ids.append(app_id)
 
-    print('Dummy appIDs: {}'.format(dummy_app_ids))
+    if len(dummy_app_ids) > 0:
+        print('Dummy appIDs: {}'.format(dummy_app_ids))
 
     return similarity_scores
 
@@ -70,6 +71,7 @@ def train_doc_model_on_steam_tokens(model=None, steam_tokens=None, num_epochs=10
 
 
 def compute_similarity_using_doc2vec_model(query_app_id, steam_tokens=None, model=None,
+                                           verbose=False,
                                            enforce_training=False, avoid_inference=False, num_items_displayed=10):
     if steam_tokens is None:
         steam_tokens = load_tokens()
@@ -87,13 +89,15 @@ def compute_similarity_using_doc2vec_model(query_app_id, steam_tokens=None, mode
             model = train_doc_model_on_steam_tokens(model=None, steam_tokens=steam_tokens)
 
     if avoid_inference:
-        print('Finding most similar documents based on the query appID.')
+        if verbose:
+            print('Finding most similar documents based on the query appID.')
         # For games which are part of the training corpus, we do not need to call model.infer_vector()
 
         similarity_scores_as_tuples = model.docvecs.most_similar(positive=get_tag_prefix() + str(query_app_id),
                                                                  topn=num_items_displayed)
     else:
-        print('Finding most similar documents based on an inferred vector, which represents the query document.')
+        if verbose:
+            print('Finding most similar documents based on an inferred vector, which represents the query document.')
         query = steam_tokens[query_app_id]
         # Caveat: « Subsequent calls to this function may infer different representations for the same document. »
         # Reference: https://radimrehurek.com/gensim/models/doc2vec.html#gensim.models.doc2vec.Doc2Vec.infer_vector
