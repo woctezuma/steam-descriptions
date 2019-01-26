@@ -114,5 +114,4 @@ def filter_tokens(steam_tokens):
 
 
 if __name__ == '__main__':
-    word_model_file_name = get_word_model_file_name()
-    print(word_model_file_name)
+    compute_tokens(save_to_disk=True)
