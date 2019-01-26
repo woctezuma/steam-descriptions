@@ -41,10 +41,17 @@ def load_game_names():
     steam_sentences = load_raw_data()
 
     game_names = dict()
+    game_tags = dict()
+
     for app_id in steam_sentences:
         game_names[app_id] = steam_sentences[app_id]['name']
 
-    return game_names
+        try:
+            game_tags[app_id] = steam_sentences[app_id]['genres'] + steam_sentences[app_id]['categories']
+        except KeyError:
+            game_tags[app_id] = []
+
+    return game_names, game_tags
 
 
 def load_tokens(filter_a_few_special_characters=True):

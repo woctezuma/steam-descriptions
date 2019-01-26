@@ -16,7 +16,7 @@ def read_corpus(steam_tokens):
 
 def reformat_similarity_scores_for_doc2vec(similarity_scores_as_tuples, game_names=None):
     if game_names is None:
-        game_names = load_game_names()
+        game_names, _ = load_game_names()
 
     dummy_app_ids = []
 

@@ -39,7 +39,7 @@ def compute_similarity_with_all_other_steam_sentences(query_app_id, steam_tokens
         model = Word2Vec.load(get_word_model_file_name())
 
     if game_names is None:
-        game_names = load_game_names()
+        game_names, _ = load_game_names()
 
     index2word_set = get_word_model_vocabulary(model)
 
@@ -74,7 +74,7 @@ def get_store_url_as_bb_code(app_id):
 
 def print_most_similar_sentences(similarity_scores, num_items_displayed=10, game_names=None, is_query_included=True):
     if game_names is None:
-        game_names = load_game_names()
+        game_names, _ = load_game_names()
 
     counter = 0
 
