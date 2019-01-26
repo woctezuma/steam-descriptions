@@ -121,10 +121,10 @@ def check_analogy(model, pos, neg, num_items_displayed=10):
     return
 
 
-def apply_pipeline(train_from_scratch=True, avoid_inference=False):
+def apply_pipeline(train_from_scratch=True, avoid_inference=False, include_genres=False, include_categories=True):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
-    game_names, game_tags = load_game_names()
+    game_names, game_tags = load_game_names(include_genres, include_categories)
 
     steam_tokens = load_tokens()
 
@@ -194,4 +194,4 @@ def get_doc_model_entity(model):
 
 
 if __name__ == '__main__':
-    apply_pipeline(train_from_scratch=True, avoid_inference=True)
+    apply_pipeline(train_from_scratch=True, avoid_inference=True, include_genres=False, include_categories=True)
