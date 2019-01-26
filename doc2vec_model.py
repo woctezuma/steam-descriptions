@@ -147,7 +147,9 @@ def apply_pipeline(train_from_scratch=True, avoid_inference=False):
     # Half-Life + (Witcher 2) - (Witcher)
     check_analogy(model, pos=['70', '20920'], neg=['20900'])
 
-    for query_app_id in ['620', '364470', '504230', '583950', '646570', '863550']:
+    query_app_ids = ['620', '364470', '504230', '583950', '646570', '863550']
+
+    for query_app_id in query_app_ids:
         print('Query appID: {} ({})'.format(query_app_id, game_names[query_app_id]))
         compute_similarity_using_doc2vec_model(query_app_id, steam_tokens, model,
                                                avoid_inference=avoid_inference,
@@ -157,7 +159,23 @@ def apply_pipeline(train_from_scratch=True, avoid_inference=False):
     for query_word in ['anime', 'fun', 'violent']:
         compute_similarity_using_word2vec_model(query_word, steam_tokens, model)
 
+    entity = get_doc_model_entity(model)
+
+    query_tags = ['In-App Purchases']
+
+    for query_tag in entity.intersection(query_tags):
+        for query_app_id in query_app_ids:
+            sim = model.docvecs.similarity(get_tag_prefix() + query_app_id, query_tag)
+            print('Similarity = {:.0%} for tag {} vs. appID {} ({})'.format(sim, query_tag, query_app_id,
+                                                                            game_names[query_app_id]))
+
     return
+
+
+def get_doc_model_entity(model):
+    # The equivalent of a vocabulary for a word model
+    index2entity_set = set(model.docvecs.index2entity)
+    return index2entity_set
 
 
 if __name__ == '__main__':
