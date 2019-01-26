@@ -37,10 +37,10 @@ def reformat_similarity_scores_for_doc2vec(similarity_scores_as_tuples, game_nam
     for app_id, similarity_value in similarity_scores_as_tuples:
         if app_id.startswith(get_tag_prefix()):
             app_id = app_id[len(get_tag_prefix()):]
-        # Remove dummy appIDs
-        if str(app_id) in game_names:
-            similarity_scores[str(app_id)] = similarity_value
-        else:
+
+        similarity_scores[str(app_id)] = similarity_value
+
+        if str(app_id) not in game_names:
             dummy_app_ids.append(app_id)
 
     if len(dummy_app_ids) > 0:
@@ -165,16 +165,24 @@ def apply_pipeline(train_from_scratch=True, avoid_inference=False):
         compute_similarity_using_word2vec_model(query_word, steam_tokens, model)
 
     entity = get_doc_model_entity(model)
+    tag_entity = set(tag for tag in entity if 'appID_' not in tag)
 
-    print([tag for tag in entity if 'appID_' not in tag])
+    print(tag_entity)
 
     query_tags = ['In-App Purchases', 'Free to Play', 'Violent', 'Early Access']
 
-    for query_tag in entity.intersection(query_tags):
+    for query_tag in tag_entity.intersection(query_tags):
         for query_app_id in query_app_ids:
             sim = model.docvecs.similarity(get_tag_prefix() + query_app_id, query_tag)
             print('Similarity = {:.0%} for tag {} vs. appID {} ({})'.format(sim, query_tag, query_app_id,
                                                                             game_names[query_app_id]))
+
+    num_items_displayed = 1
+    for query_tag in tag_entity:
+        print('\nTag: {}'.format(query_tag))
+        similarity_scores_as_tuples = model.docvecs.most_similar(positive=query_tag, topn=num_items_displayed)
+        similarity_scores = reformat_similarity_scores_for_doc2vec(similarity_scores_as_tuples)
+        print_most_similar_sentences(similarity_scores, num_items_displayed=num_items_displayed)
 
     return
 

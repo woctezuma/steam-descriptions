@@ -89,7 +89,11 @@ def print_most_similar_sentences(similarity_scores, num_items_displayed=10, game
 
         store_url = get_store_url_as_bb_code(app_id)
 
-        print('{:2}) similarity: {:.1%} ; appID: {} ({})'.format(counter, sim_value, store_url, game_names[app_id]))
+        try:
+            print('{:2}) similarity: {:.1%} ; appID: {} ({})'.format(counter, sim_value, store_url, game_names[app_id]))
+        except KeyError:
+            print('{:2}) similarity: {:.1%} ; tag: {}'.format(counter, sim_value, app_id))
+
         similar_app_ids.append(app_id)
 
         if counter >= num_items_displayed:
