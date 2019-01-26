@@ -4,30 +4,21 @@ import multiprocessing
 from gensim.models import doc2vec
 
 from doc2vec_model import check_analogy
-from doc2vec_model import compute_similarity_using_doc2vec_model, train_doc_model_on_steam_tokens, read_corpus
-from utils import load_tokens, get_doc_model_file_name
+from doc2vec_model import compute_similarity_using_doc2vec_model, read_corpus
+from utils import load_tokens
 from word_model import compute_similarity_using_word2vec_model
 
 
-def main(train_from_scratch=True, enforce_training=False):
+def main():
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
     steam_tokens = load_tokens()
 
-    if train_from_scratch:
-        print('Creating a new Doc2Vec model from scratch.')
-        documents = list(read_corpus(steam_tokens))
-        model = doc2vec.Doc2Vec(documents,
-                                num_epochs=20,
-                                workers=multiprocessing.cpu_count())
-    else:
-        print('Loading previous Doc2Vec model.')
-        model = doc2vec.Doc2Vec.load(get_doc_model_file_name())
+    documents = list(read_corpus(steam_tokens))
 
-    if enforce_training:
-        # You do not want to perform training this way, because training already happened when initializating the model
-        # with Doc2Vec(documents). Moreover, calling train() several times messes with decay of learning rate alpha!
-        model = train_doc_model_on_steam_tokens(model=model, steam_tokens=steam_tokens, num_epochs=model.epochs)
+    model = doc2vec.Doc2Vec(documents,
+                            num_epochs=20,
+                            workers=multiprocessing.cpu_count())
 
     # Test doc2vec
     check_analogy(model, pos=[239350, 646570], neg=[557410])  # Spelunky + (Slay the Spire) - (Dream Quest)
