@@ -15,8 +15,10 @@ def read_corpus(steam_tokens, game_tags=None):
         try:
             doc_tag += game_tags[app_id]
         except KeyError:
-            if game_tags is not None:
-                print('AppID = {} cannot be found in tag dictionary.'.format(app_id))
+            print('AppID = {} cannot be found in tag dictionary.'.format(app_id))
+        except TypeError:
+            pass
+
         yield doc2vec.TaggedDocument(tokens, doc_tag)
 
 
