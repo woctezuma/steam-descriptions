@@ -177,7 +177,7 @@ def apply_pipeline(train_from_scratch=True, avoid_inference=False, include_genre
             print('Similarity = {:.0%} for tag {} vs. appID {} ({})'.format(sim, query_tag, query_app_id,
                                                                             game_names[query_app_id]))
 
-    num_items_displayed = 1
+    num_items_displayed = 3
     for query_tag in tag_entity:
         print('\nTag: {}'.format(query_tag))
         similarity_scores_as_tuples = model.docvecs.most_similar(positive=query_tag, topn=num_items_displayed)
