@@ -147,10 +147,8 @@ def apply_pipeline(train_from_scratch=True, avoid_inference=False):
     # Half-Life + (Witcher 2) - (Witcher)
     check_analogy(model, pos=['70', '20920'], neg=['20900'])
 
-    for query_app_id in ['10', '620', '105600', '264710', '292030', '294100', '364470', '504230', '519860', '531640',
-                         '560130', '582010', '583950', '588650', '590380', '620980', '638970', '644560', '646570',
-                         '653530', '683320', '698780', '731490', '742120', '812140', '863550', '973760']:
-        print(game_names[query_app_id])
+    for query_app_id in ['620', '364470', '504230', '583950', '646570', '863550']:
+        print('Query appID: {} ({})'.format(query_app_id, game_names[query_app_id]))
         compute_similarity_using_doc2vec_model(query_app_id, steam_tokens, model,
                                                avoid_inference=avoid_inference,
                                                num_items_displayed=3)
