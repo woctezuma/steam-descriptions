@@ -17,6 +17,7 @@ def read_corpus(steam_tokens, game_tags=None):
     for app_id, tokens in steam_tokens.items():
         doc_tag = [get_tag_prefix() + str(app_id)]
         try:
+            # Reference: https://medium.com/scaleabout/a-gentle-introduction-to-doc2vec-db3e8c0cce5e
             doc_tag += game_tags[app_id]
         except KeyError:
             print('AppID = {} cannot be found in tag dictionary.'.format(app_id))
