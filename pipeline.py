@@ -20,7 +20,6 @@ def main(train_from_scratch=True):
 
     if train_from_scratch:
         print('Creating a new Doc2Vec model from scratch.')
-        documents = list(read_corpus(steam_tokens))
         model = doc2vec.Doc2Vec(documents,
                                 epochs=20,
                                 workers=multiprocessing.cpu_count())
