@@ -111,6 +111,9 @@ if __name__ == '__main__':
     for query_app_id in ['583950', '531640', '364470', '292030']:
         compute_similarity_using_doc2vec_model(query_app_id, steam_tokens, model, avoid_inference=False)
 
+    check_analogy(model, pos=[239350, 646570], neg=[557410])  # Spelunky + (Slay the Spire) - (Dream Quest)
+    check_analogy(model, pos=[70, 20920], neg=[20900])  # Half-Life + (Witcher 2) - (Witcher)
+
     # Check the relevance of the corresponding word2vec
     for query_word in ['anime', 'fun', 'violent']:
         compute_similarity_using_word2vec_model(query_word, steam_tokens, model)
