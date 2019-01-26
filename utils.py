@@ -1,5 +1,6 @@
 import json
 
+from gensim.parsing.preprocessing import strip_tags, remove_stopwords
 from gensim.utils import simple_preprocess
 
 
@@ -84,7 +85,7 @@ def compute_tokens(steam_sentences=None, save_to_disk=False):
         if (counter % 1000) == 0:
             print('[{}/{}] appID = {} ({})'.format(counter, num_games, app_id, game_data['name']))
 
-        game_tokens = simple_preprocess(game_data['text'], deacc=True)
+        game_tokens = simple_preprocess(remove_stopwords(strip_tags(game_data['text'])), deacc=True, min_len=3)
         steam_tokens[app_id] = list(game_tokens)
 
     if save_to_disk:
