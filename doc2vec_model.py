@@ -9,9 +9,13 @@ from utils import load_tokens, load_game_names, get_doc_model_file_name
 from word_model import compute_similarity_using_word2vec_model
 
 
+def get_tag_prefix():
+    return 'appID_'
+
+
 def read_corpus(steam_tokens, game_tags=None):
     for app_id, tokens in steam_tokens.items():
-        doc_tag = [int(app_id)]
+        doc_tag = [get_tag_prefix() + str(app_id)]
         try:
             doc_tag += game_tags[app_id]
         except KeyError:
@@ -30,6 +34,8 @@ def reformat_similarity_scores_for_doc2vec(similarity_scores_as_tuples, game_nam
 
     similarity_scores = dict()
     for app_id, similarity_value in similarity_scores_as_tuples:
+        if app_id.startswith(get_tag_prefix()):
+            app_id = app_id[len(get_tag_prefix()):]
         # Remove dummy appIDs
         if str(app_id) in game_names:
             similarity_scores[str(app_id)] = similarity_value
@@ -83,15 +89,8 @@ def compute_similarity_using_doc2vec_model(query_app_id, steam_tokens=None, mode
         print('Finding most similar documents based on the query appID.')
         # For games which are part of the training corpus, we do not need to call model.infer_vector()
 
-        num_items_retrieved = max(4 * num_items_displayed, 20)
-        similarity_scores_as_tuples = model.docvecs.most_similar(positive=int(query_app_id), topn=num_items_retrieved)
-
-        # Hack for display with print_most_similar_sentences():
-        # if model.docvecs.most_similar() is called with an integer doctag found in the training set,
-        # then the doctag is not returned! So, we add it to the list of tuples for later display!
-        perfect_similarity_score = 1.0
-        if all(query_app_id != app_id for (app_id, similarity_value) in similarity_scores_as_tuples):
-            similarity_scores_as_tuples.append((query_app_id, perfect_similarity_score))
+        similarity_scores_as_tuples = model.docvecs.most_similar(positive=get_tag_prefix() + str(query_app_id),
+                                                                 topn=num_items_displayed)
     else:
         print('Finding most similar documents based on an inferred vector, which represents the query document.')
         query = steam_tokens[query_app_id]
@@ -110,38 +109,52 @@ def check_analogy(model, pos, neg):
     similarity_scores_as_tuples = model.docvecs.most_similar(positive=pos, negative=neg, topn=20)
 
     similarity_scores = reformat_similarity_scores_for_doc2vec(similarity_scores_as_tuples)
-    print_most_similar_sentences(similarity_scores, num_items_displayed=3, is_query_included=False)
+    print_most_similar_sentences(similarity_scores, num_items_displayed=3)
 
     return
 
 
-if __name__ == '__main__':
-    train_from_scratch = False
-
+def apply_pipeline(train_from_scratch=True):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+
+    game_names, game_tags = load_game_names()
 
     steam_tokens = load_tokens()
 
+    documents = list(read_corpus(steam_tokens, game_tags))
+
     if train_from_scratch:
         print('Creating a new Doc2Vec model from scratch.')
-        documents = list(read_corpus(steam_tokens))
         model = doc2vec.Doc2Vec(documents,
                                 epochs=20,
                                 workers=multiprocessing.cpu_count())
+
         model.save(get_doc_model_file_name())
     else:
         print('Loading previous Doc2Vec model.')
         model = doc2vec.Doc2Vec.load(get_doc_model_file_name())
 
     # Test doc2vec
+
+    # Spelunky + (Slay the Spire) - (Dream Quest)
+    check_analogy(model, pos=['appID_239350', 'appID_646570'], neg=['appID_557410'])
+
+    # Half-Life + (Witcher 2) - (Witcher)
+    check_analogy(model, pos=['appID_70', 'appID_20920'], neg=['appID_20900'])
+
     for query_app_id in ['10', '620', '105600', '264710', '292030', '294100', '364470', '504230', '519860', '531640',
                          '560130', '582010', '583950', '588650', '590380', '620980', '638970', '644560', '646570',
                          '653530', '683320', '698780', '731490', '742120', '812140', '863550', '973760']:
-        compute_similarity_using_doc2vec_model(query_app_id, steam_tokens, model, avoid_inference=False)
-
-    check_analogy(model, pos=[239350, 646570], neg=[557410])  # Spelunky + (Slay the Spire) - (Dream Quest)
-    check_analogy(model, pos=[70, 20920], neg=[20900])  # Half-Life + (Witcher 2) - (Witcher)
+        print(game_names[query_app_id])
+        compute_similarity_using_doc2vec_model(query_app_id, steam_tokens, model, avoid_inference=False,
+                                               num_items_displayed=3)
 
     # Check the relevance of the corresponding word2vec
     for query_word in ['anime', 'fun', 'violent']:
         compute_similarity_using_word2vec_model(query_word, steam_tokens, model)
+
+    return
+
+
+if __name__ == '__main__':
+    apply_pipeline(train_from_scratch=True)
