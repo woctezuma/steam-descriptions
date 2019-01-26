@@ -38,7 +38,7 @@ def load_raw_data():
     return steam_sentences
 
 
-def load_game_names():
+def load_game_names(include_genres=True, include_categories=True):
     steam_sentences = load_raw_data()
 
     game_names = dict()
@@ -47,10 +47,19 @@ def load_game_names():
     for app_id in steam_sentences:
         game_names[app_id] = steam_sentences[app_id]['name']
 
-        try:
-            game_tags[app_id] = steam_sentences[app_id]['genres'] + steam_sentences[app_id]['categories']
-        except KeyError:
-            game_tags[app_id] = []
+        game_tags[app_id] = []
+
+        if include_genres:
+            try:
+                game_tags[app_id] += steam_sentences[app_id]['genres']
+            except KeyError:
+                pass
+
+        if include_categories:
+            try:
+                game_tags[app_id] += steam_sentences[app_id]['categories']
+            except KeyError:
+                pass
 
     return game_names, game_tags
 
