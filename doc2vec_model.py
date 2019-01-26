@@ -105,11 +105,13 @@ def compute_similarity_using_doc2vec_model(query_app_id, steam_tokens=None, mode
     return similarity_scores
 
 
-def check_analogy(model, pos, neg):
-    similarity_scores_as_tuples = model.docvecs.most_similar(positive=pos, negative=neg, topn=20)
+def check_analogy(model, pos, neg, num_items_displayed=10):
+    similarity_scores_as_tuples = model.docvecs.most_similar(positive=[get_tag_prefix() + p for p in pos],
+                                                             negative=[get_tag_prefix() + n for n in neg],
+                                                             topn=num_items_displayed)
 
     similarity_scores = reformat_similarity_scores_for_doc2vec(similarity_scores_as_tuples)
-    print_most_similar_sentences(similarity_scores, num_items_displayed=3)
+    print_most_similar_sentences(similarity_scores, num_items_displayed)
 
     return
 
@@ -137,10 +139,10 @@ def apply_pipeline(train_from_scratch=True):
     # Test doc2vec
 
     # Spelunky + (Slay the Spire) - (Dream Quest)
-    check_analogy(model, pos=['appID_239350', 'appID_646570'], neg=['appID_557410'])
+    check_analogy(model, pos=['239350', '646570'], neg=['557410'])
 
     # Half-Life + (Witcher 2) - (Witcher)
-    check_analogy(model, pos=['appID_70', 'appID_20920'], neg=['appID_20900'])
+    check_analogy(model, pos=['70', '20920'], neg=['20900'])
 
     for query_app_id in ['10', '620', '105600', '264710', '292030', '294100', '364470', '504230', '519860', '531640',
                          '560130', '582010', '583950', '588650', '590380', '620980', '638970', '644560', '646570',
