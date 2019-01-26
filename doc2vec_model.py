@@ -9,9 +9,15 @@ from utils import load_tokens, load_game_names, get_doc_model_file_name
 from word_model import compute_similarity_using_word2vec_model
 
 
-def read_corpus(steam_tokens):
+def read_corpus(steam_tokens, game_tags=None):
     for app_id, tokens in steam_tokens.items():
-        yield doc2vec.TaggedDocument(tokens, [int(app_id)])
+        doc_tag = [int(app_id)]
+        try:
+            doc_tag += game_tags[app_id]
+        except KeyError:
+            if game_tags is not None:
+                print('AppID = {} cannot be found in tag dictionary.'.format(app_id))
+        yield doc2vec.TaggedDocument(tokens, doc_tag)
 
 
 def reformat_similarity_scores_for_doc2vec(similarity_scores_as_tuples, game_names=None):

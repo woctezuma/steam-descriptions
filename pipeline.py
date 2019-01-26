@@ -5,16 +5,18 @@ from gensim.models import doc2vec
 
 from doc2vec_model import check_analogy
 from doc2vec_model import compute_similarity_using_doc2vec_model, read_corpus
-from utils import load_tokens
+from utils import load_tokens, load_game_names
 from word_model import compute_similarity_using_word2vec_model
 
 
 def main():
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
+    game_names, game_tags = load_game_names()
+
     steam_tokens = load_tokens()
 
-    documents = list(read_corpus(steam_tokens))
+    documents = list(read_corpus(steam_tokens, game_tags))
 
     model = doc2vec.Doc2Vec(documents,
                             num_epochs=20,
