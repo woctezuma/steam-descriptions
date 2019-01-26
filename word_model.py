@@ -6,13 +6,15 @@ from utils import get_word_model_file_name, load_tokens
 
 
 def train_word_model_on_steam_tokens(model=None, steam_tokens=None, num_epochs=10):
+    # Warning: training will happen several times, which might be detrimental to your model!
+
     if steam_tokens is None:
         steam_tokens = load_tokens()
 
     documents = list(steam_tokens.values())
 
     if model is None:
-        model = Word2Vec(documents)
+        model = Word2Vec(documents)  # training already happens here, due to the 'documents' argument!
 
     model.train(documents, total_examples=len(documents), epochs=num_epochs)
 
