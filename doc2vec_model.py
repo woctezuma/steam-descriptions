@@ -162,7 +162,9 @@ def apply_pipeline(train_from_scratch=True, avoid_inference=False):
 
     entity = get_doc_model_entity(model)
 
-    query_tags = ['In-App Purchases']
+    print([tag for tag in entity if 'appID_' not in tag])
+
+    query_tags = ['In-App Purchases', 'Free to Play', 'Violent', 'Early Access']
 
     for query_tag in entity.intersection(query_tags):
         for query_app_id in query_app_ids:
