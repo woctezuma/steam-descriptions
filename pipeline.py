@@ -5,11 +5,11 @@ from gensim.models import doc2vec
 
 from doc2vec_model import check_analogy
 from doc2vec_model import compute_similarity_using_doc2vec_model, read_corpus
-from utils import load_tokens, load_game_names
+from utils import load_tokens, load_game_names, get_doc_model_file_name
 from word_model import compute_similarity_using_word2vec_model
 
 
-def main():
+def main(train_from_scratch=True):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
     game_names, game_tags = load_game_names()
@@ -18,9 +18,17 @@ def main():
 
     documents = list(read_corpus(steam_tokens, game_tags))
 
-    model = doc2vec.Doc2Vec(documents,
-                            epochs=20,
-                            workers=multiprocessing.cpu_count())
+    if train_from_scratch:
+        print('Creating a new Doc2Vec model from scratch.')
+        documents = list(read_corpus(steam_tokens))
+        model = doc2vec.Doc2Vec(documents,
+                                epochs=20,
+                                workers=multiprocessing.cpu_count())
+
+        model.save(get_doc_model_file_name())
+    else:
+        print('Loading previous Doc2Vec model.')
+        model = doc2vec.Doc2Vec.load(get_doc_model_file_name())
 
     # Test doc2vec
     check_analogy(model, pos=[239350, 646570], neg=[557410])  # Spelunky + (Slay the Spire) - (Dream Quest)

@@ -126,6 +126,7 @@ if __name__ == '__main__':
         model = doc2vec.Doc2Vec(documents,
                                 epochs=20,
                                 workers=multiprocessing.cpu_count())
+        model.save(get_doc_model_file_name())
     else:
         print('Loading previous Doc2Vec model.')
         model = doc2vec.Doc2Vec.load(get_doc_model_file_name())
