@@ -18,7 +18,19 @@ from gensim.utils import simple_preprocess
 with open('data/aggregate_prettyprint.json', 'r') as f:
     data = json.load(f)
 
-tokens = {}
+try:
+    with open('data/tokens.json', 'r') as f:
+        tokens = json.load(f)
+    tokens_loaded = True
+except FileNotFoundError:
+    tokens = {}
+    tokens_loaded = False
+
 for app_id in data:
-    tokens[app_id] = list(simple_preprocess(data[app_id]['text'], deacc=True))    
+    if tokens_loaded and (app_id not in tokens):
+        print('AppID: {}'.format(app_id))
+        tokens[app_id] = list(simple_preprocess(data[app_id]['text'], deacc=True))
+
+with open('data/tokens.json', 'w') as f:
+    json.dump(tokens, f)
 ```
