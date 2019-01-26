@@ -116,7 +116,7 @@ def check_analogy(model, pos, neg, num_items_displayed=10):
     return
 
 
-def apply_pipeline(train_from_scratch=True):
+def apply_pipeline(train_from_scratch=True, avoid_inference=False):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
     game_names, game_tags = load_game_names()
@@ -148,7 +148,8 @@ def apply_pipeline(train_from_scratch=True):
                          '560130', '582010', '583950', '588650', '590380', '620980', '638970', '644560', '646570',
                          '653530', '683320', '698780', '731490', '742120', '812140', '863550', '973760']:
         print(game_names[query_app_id])
-        compute_similarity_using_doc2vec_model(query_app_id, steam_tokens, model, avoid_inference=False,
+        compute_similarity_using_doc2vec_model(query_app_id, steam_tokens, model,
+                                               avoid_inference=avoid_inference,
                                                num_items_displayed=3)
 
     # Check the relevance of the corresponding word2vec
@@ -159,4 +160,4 @@ def apply_pipeline(train_from_scratch=True):
 
 
 if __name__ == '__main__':
-    apply_pipeline(train_from_scratch=True)
+    apply_pipeline(train_from_scratch=True, avoid_inference=True)
