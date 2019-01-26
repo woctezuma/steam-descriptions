@@ -128,6 +128,9 @@ def apply_pipeline(train_from_scratch=True, avoid_inference=False):
     if train_from_scratch:
         print('Creating a new Doc2Vec model from scratch.')
         model = doc2vec.Doc2Vec(documents,
+                                vector_size=100,
+                                window=5,
+                                min_count=5,
                                 epochs=20,
                                 workers=multiprocessing.cpu_count())
 
