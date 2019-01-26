@@ -124,7 +124,7 @@ if __name__ == '__main__':
         print('Creating a new Doc2Vec model from scratch.')
         documents = list(read_corpus(steam_tokens))
         model = doc2vec.Doc2Vec(documents,
-                                num_epochs=20,
+                                epochs=20,
                                 workers=multiprocessing.cpu_count())
     else:
         print('Loading previous Doc2Vec model.')

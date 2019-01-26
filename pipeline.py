@@ -19,7 +19,7 @@ def main():
     documents = list(read_corpus(steam_tokens, game_tags))
 
     model = doc2vec.Doc2Vec(documents,
-                            num_epochs=20,
+                            epochs=20,
                             workers=multiprocessing.cpu_count())
 
     # Test doc2vec
