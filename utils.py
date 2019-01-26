@@ -55,7 +55,7 @@ def load_game_names():
     return game_names, game_tags
 
 
-def load_tokens(filter_a_few_special_characters=True):
+def load_tokens(filter_a_few_special_characters=False):
     print('Loading tokens')
 
     with open(get_token_file_name(), 'r') as f:
