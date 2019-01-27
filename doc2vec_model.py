@@ -170,7 +170,7 @@ def apply_pipeline(train_from_scratch=True, avoid_inference=False,
         print('Query appID: {} ({})'.format(query_app_id, game_names[query_app_id]))
         compute_similarity_using_doc2vec_model(query_app_id, steam_tokens, model,
                                                avoid_inference=avoid_inference,
-                                               num_items_displayed=3)
+                                               num_items_displayed=10)
 
     # Check the relevance of the corresponding word2vec
     for query_word in ['anime', 'fun', 'violent']:
