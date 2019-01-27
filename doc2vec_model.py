@@ -209,5 +209,5 @@ def get_doc_model_entity(model):
 
 
 if __name__ == '__main__':
-    apply_pipeline(train_from_scratch=True, avoid_inference=True,
-                   include_genres=False, include_categories=True, include_app_ids=True)
+    apply_pipeline(train_from_scratch=True, avoid_inference=False,
+                   include_genres=False, include_categories=False, include_app_ids=True)
