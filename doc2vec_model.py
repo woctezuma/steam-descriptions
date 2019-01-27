@@ -152,11 +152,17 @@ def apply_pipeline(train_from_scratch=True, avoid_inference=False,
 
     # Test doc2vec
 
-    # Spelunky + (Slay the Spire) - (Dream Quest)
-    check_analogy(model, pos=['239350', '646570'], neg=['557410'])
+    try:
+        # Spelunky + (Slay the Spire) - (Dream Quest)
+        check_analogy(model, pos=['239350', '646570'], neg=['557410'])
+    except TypeError:
+        pass
 
-    # Half-Life + (Witcher 2) - (Witcher)
-    check_analogy(model, pos=['70', '20920'], neg=['20900'])
+    try:
+        # Half-Life + (Witcher 2) - (Witcher)
+        check_analogy(model, pos=['70', '20920'], neg=['20900'])
+    except TypeError:
+        pass
 
     query_app_ids = ['620', '364470', '504230', '583950', '646570', '863550']
 
@@ -179,9 +185,12 @@ def apply_pipeline(train_from_scratch=True, avoid_inference=False,
 
     for query_tag in tag_entity.intersection(query_tags):
         for query_app_id in query_app_ids:
-            sim = model.docvecs.similarity(get_tag_prefix() + query_app_id, query_tag)
-            print('Similarity = {:.0%} for tag {} vs. appID {} ({})'.format(sim, query_tag, query_app_id,
-                                                                            game_names[query_app_id]))
+            try:
+                sim = model.docvecs.similarity(get_tag_prefix() + query_app_id, query_tag)
+                print('Similarity = {:.0%} for tag {} vs. appID {} ({})'.format(sim, query_tag, query_app_id,
+                                                                                game_names[query_app_id]))
+            except KeyError:
+                pass
 
     num_items_displayed = 3
     for query_tag in tag_entity:
