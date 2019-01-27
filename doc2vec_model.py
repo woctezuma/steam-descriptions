@@ -13,9 +13,14 @@ def get_tag_prefix():
     return 'appID_'
 
 
-def read_corpus(steam_tokens, game_tags=None):
+def read_corpus(steam_tokens, game_tags=None, include_app_ids=True):
     for app_id, tokens in steam_tokens.items():
-        doc_tag = [get_tag_prefix() + str(app_id)]
+
+        doc_tag = []
+
+        if include_app_ids:
+            doc_tag += [get_tag_prefix() + str(app_id)]
+
         try:
             # Reference: https://medium.com/scaleabout/a-gentle-introduction-to-doc2vec-db3e8c0cce5e
             doc_tag += game_tags[app_id]
@@ -121,14 +126,15 @@ def check_analogy(model, pos, neg, num_items_displayed=10):
     return
 
 
-def apply_pipeline(train_from_scratch=True, avoid_inference=False, include_genres=False, include_categories=True):
+def apply_pipeline(train_from_scratch=True, avoid_inference=False,
+                   include_genres=False, include_categories=True, include_app_ids=True):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
     game_names, game_tags = load_game_names(include_genres, include_categories)
 
     steam_tokens = load_tokens()
 
-    documents = list(read_corpus(steam_tokens, game_tags))
+    documents = list(read_corpus(steam_tokens, game_tags, include_app_ids))
 
     if train_from_scratch:
         print('Creating a new Doc2Vec model from scratch.')
@@ -194,4 +200,5 @@ def get_doc_model_entity(model):
 
 
 if __name__ == '__main__':
-    apply_pipeline(train_from_scratch=True, avoid_inference=True, include_genres=False, include_categories=True)
+    apply_pipeline(train_from_scratch=True, avoid_inference=True,
+                   include_genres=False, include_categories=True, include_app_ids=True)
