@@ -142,7 +142,7 @@ def apply_pipeline(train_from_scratch=True, avoid_inference=False,
                                 vector_size=100,
                                 window=5,
                                 min_count=5,
-                                epochs=10,
+                                epochs=5,
                                 workers=multiprocessing.cpu_count())
 
         model.save(get_doc_model_file_name())
