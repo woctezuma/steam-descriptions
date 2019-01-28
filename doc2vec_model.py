@@ -164,7 +164,7 @@ def apply_pipeline(train_from_scratch=True, avoid_inference=False,
     except TypeError:
         pass
 
-    query_app_ids = ['620', '364470', '504230', '583950', '646570', '863550']
+    query_app_ids = ['620', '364470', '504230', '583950', '646570', '863550', '794600']
 
     for query_app_id in query_app_ids:
         print('Query appID: {} ({})'.format(query_app_id, game_names[query_app_id]))
