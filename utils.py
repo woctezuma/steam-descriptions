@@ -1,5 +1,6 @@
 import json
 
+import spacy
 from gensim.parsing.preprocessing import strip_tags, remove_stopwords
 from gensim.utils import simple_preprocess
 
@@ -77,7 +78,7 @@ def load_tokens(filter_a_few_special_characters=False):
     return steam_tokens
 
 
-def compute_tokens(steam_sentences=None, save_to_disk=False):
+def compute_tokens(steam_sentences=None, save_to_disk=False, use_spacy=False):
     print('Computing tokens')
 
     if steam_sentences is None:
@@ -88,6 +89,9 @@ def compute_tokens(steam_sentences=None, save_to_disk=False):
 
     steam_tokens = {}
 
+    # You need to have downloaded the model first. Reference: https://spacy.io/models/en#section-en_core_web_lg
+    nlp = spacy.load('en_core_web_lg')
+
     for app_id in steam_sentences:
         game_data = steam_sentences[app_id]
         counter += 1
@@ -95,7 +99,31 @@ def compute_tokens(steam_sentences=None, save_to_disk=False):
         if (counter % 1000) == 0:
             print('[{}/{}] appID = {} ({})'.format(counter, num_games, app_id, game_data['name']))
 
-        game_tokens = simple_preprocess(remove_stopwords(strip_tags(game_data['text'])), deacc=True, min_len=3)
+        if use_spacy:
+            original_str = str(strip_tags(game_data['text']))
+
+            original_str = original_str.replace('\t', ' ')
+
+            # Reference: https://nicschrading.com/project/Intro-to-NLP-with-spaCy/
+            original_str = original_str.strip().replace('\n', ' ').replace('\r', ' ')
+            original_str = original_str.replace('&amp;', 'and').replace('&gt;', '>').replace('&lt;', '<')
+
+            doc = nlp(original_str)
+
+            ents = [str(entity).strip() for entity in doc.ents]  # Named entities.
+
+            # Keep only words (no numbers, no punctuation).
+            # Lemmatize tokens, remove punctuation and remove stopwords.
+            doc = [token.lemma_ for token in doc if token.is_alpha and not token.is_stop]
+
+            # Add named entities, but only if they are a compound of more than word.
+            relevant_entities = [str(entity) for entity in ents if len(entity) > 1]
+            doc.extend(relevant_entities)
+
+            game_tokens = doc
+        else:
+            game_tokens = simple_preprocess(remove_stopwords(strip_tags(game_data['text'])), deacc=True, min_len=3)
+
         steam_tokens[app_id] = list(game_tokens)
 
     if save_to_disk:
@@ -124,4 +152,4 @@ def filter_tokens(steam_tokens):
 
 
 if __name__ == '__main__':
-    compute_tokens(save_to_disk=True)
+    compute_tokens(save_to_disk=True, use_spacy=True)
