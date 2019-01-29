@@ -33,10 +33,13 @@ def main(chosen_model_no=6, num_items_displayed=10):
 
     # Pre-processing
 
-    if chosen_model_name.endswith('_tf_idf'):
+    pre_process_corpus_with_tf_idf = chosen_model_name.endswith('_tf_idf')
+
+    tfidf_model = TfidfModel(corpus, id2word=dct, normalize=False)  # TODO choose whether to normalize
+
+    if pre_process_corpus_with_tf_idf:
         # Caveat: the leading underscore is important. Do not use this pre-processing if the chosen model is Tf-Idf!
         print('Corpus as Tf-Idf')
-        tfidf_model = TfidfModel(corpus, id2word=dct, normalize=False)  # TODO choose whether to normalize
         pre_processed_corpus = tfidf_model[corpus]
     else:
         print('Corpus as Bag-of-Words')
@@ -46,7 +49,7 @@ def main(chosen_model_no=6, num_items_displayed=10):
 
     if chosen_model_name == 'tf_idf':
         print('Term Frequency * Inverse Document Frequency (Tf-Idf)')
-        model = TfidfModel(pre_processed_corpus, id2word=dct, normalize=True)  # TODO choose whether to normalize
+        model = tfidf_model
 
     elif chosen_model_name.startswith('lsi'):
         print('Latent Semantic Indexing (LSI/LSA)')
@@ -82,7 +85,11 @@ def main(chosen_model_no=6, num_items_displayed=10):
 
         query = steam_tokens[query_app_id]
         vec_bow = dct.doc2bow(query)
-        vec_lsi = model[vec_bow]
+        if pre_process_corpus_with_tf_idf:
+            pre_preoccessed_vec = tfidf_model[vec_bow]
+        else:
+            pre_preoccessed_vec = vec_bow
+        vec_lsi = model[pre_preoccessed_vec]
         sims = index[vec_lsi]
 
         similarity_scores_as_tuples = [(app_ids[i], sim) for (i, sim) in sims]
