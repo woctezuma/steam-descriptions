@@ -1,19 +1,50 @@
+import logging
+
+import numpy as np
 from gensim.corpora import Dictionary
-from gensim.models import TfidfModel, LsiModel, RpModel, LdaModel, HdpModel
+from gensim.matutils import unitvec
+from gensim.models import TfidfModel, LsiModel, RpModel, LdaModel, HdpModel, KeyedVectors
 from gensim.similarities import MatrixSimilarity
 
 from doc2vec_model import reformat_similarity_scores_for_doc2vec
-from sentence_models import print_most_similar_sentences
+from sentence_models import print_most_similar_sentences, filter_out_words_not_in_vocabulary
 from utils import load_tokens, load_game_names
 
 
-def main(chosen_model_no=6, num_items_displayed=10):
+def word_averaging(wv, words):
+    # Reference: https://github.com/RaRe-Technologies/movie-plots-by-genre
+
+    all_words, mean = set(), []
+
+    for word in words:
+        if isinstance(word, np.ndarray):
+            mean.append(word)
+        elif word in wv.vocab:
+            mean.append(wv.syn0norm[wv.vocab[word].index])
+            all_words.add(wv.vocab[word].index)
+
+    if not mean:
+        logging.warning("cannot compute similarity with no input %s", words)
+        # FIXME: remove these examples in pre-processing
+        return np.zeros(wv.layer1_size, )
+
+    mean = unitvec(np.array(mean).mean(axis=0)).astype(np.float32)
+    return mean
+
+
+def word_averaging_list(wv, text_list):
+    # Reference: https://github.com/RaRe-Technologies/movie-plots-by-genre
+    return np.vstack([word_averaging(wv, review) for review in text_list])
+
+
+def main(chosen_model_no=9, num_items_displayed=10):
     possible_model_names = [
-        'tf_idf',
-        'lsi_bow', 'lsi_tf_idf',
-        'rp_bow', 'rp_tf_idf',
-        'lda_bow', 'lda_tf_idf',
-        'hdp_bow', 'hdp_tf_idf',
+        'tf_idf',  # 0
+        'lsi_bow', 'lsi_tf_idf',  # 1, 2
+        'rp_bow', 'rp_tf_idf',  # 3, 4
+        'lda_bow', 'lda_tf_idf',  # 5, 6
+        'hdp_bow', 'hdp_tf_idf',  # 7, 8
+        'word2vec',  # 9
     ]
     chosen_model_name = possible_model_names[chosen_model_no]
     print(chosen_model_name)
@@ -47,6 +78,9 @@ def main(chosen_model_no=6, num_items_displayed=10):
 
     # Model
 
+    wv = None
+    index2word_set = None
+
     if chosen_model_name == 'tf_idf':
         print('Term Frequency * Inverse Document Frequency (Tf-Idf)')
         model = tfidf_model
@@ -69,12 +103,24 @@ def main(chosen_model_no=6, num_items_displayed=10):
         model = HdpModel(pre_processed_corpus, id2word=dct)
         pass
 
+    elif chosen_model_name == 'word2vec':
+        model = None
+
+        # Warning: this takes a lot of time and uses a ton of RAM!
+        print('Loading Word2Vec based on Google News')
+        wv = KeyedVectors.load_word2vec_format('data/GoogleNews-vectors-negative300.bin.gz', binary=True)
+        wv.init_sims(replace=True)
+
+        index2word_set = set(wv.index2word)
+
     else:
         print('No model specified.')
         model = None
-        pass
 
-    index = MatrixSimilarity(model[pre_processed_corpus], num_best=10, num_features=len(dct))
+    if chosen_model_name != 'word2vec':
+        index = MatrixSimilarity(model[pre_processed_corpus], num_best=10, num_features=len(dct))
+    else:
+        index = None
 
     query_app_ids = ['620', '364470', '504230', '583950', '646570', '863550', '794600']
 
@@ -84,17 +130,37 @@ def main(chosen_model_no=6, num_items_displayed=10):
         print('Query appID: {} ({})'.format(query_app_id, game_names[query_app_id]))
 
         query = steam_tokens[query_app_id]
-        vec_bow = dct.doc2bow(query)
-        if pre_process_corpus_with_tf_idf:
-            pre_preoccessed_vec = tfidf_model[vec_bow]
+
+        if chosen_model_name != 'word2vec':
+            vec_bow = dct.doc2bow(query)
+            if pre_process_corpus_with_tf_idf:
+                pre_preoccessed_vec = tfidf_model[vec_bow]
+            else:
+                pre_preoccessed_vec = vec_bow
+            vec_lsi = model[pre_preoccessed_vec]
+            sims = index[vec_lsi]
+
+            similarity_scores_as_tuples = [(app_ids[i], sim) for (i, sim) in sims]
+            similarity_scores = reformat_similarity_scores_for_doc2vec(similarity_scores_as_tuples)
         else:
-            pre_preoccessed_vec = vec_bow
-        vec_lsi = model[pre_preoccessed_vec]
-        sims = index[vec_lsi]
+            query_sentence = filter_out_words_not_in_vocabulary(query, index2word_set)
 
-        similarity_scores_as_tuples = [(app_ids[i], sim) for (i, sim) in sims]
+            similarity_scores = {}
 
-        similarity_scores = reformat_similarity_scores_for_doc2vec(similarity_scores_as_tuples)
+            counter = 0
+            num_games = len(steam_tokens)
+
+            for app_id in steam_tokens:
+                counter += 1
+
+                if (counter % 1000) == 0:
+                    print('[{}/{}] appID = {} ({})'.format(counter, num_games, app_id, game_names[app_id]))
+
+                reference_sentence = steam_tokens[app_id]
+                reference_sentence = filter_out_words_not_in_vocabulary(reference_sentence, index2word_set)
+
+                similarity_scores[app_id] = wv.n_similarity(query_sentence, reference_sentence)
+
         print_most_similar_sentences(similarity_scores, num_items_displayed=num_items_displayed)
 
     return
