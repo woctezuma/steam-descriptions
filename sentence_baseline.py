@@ -119,7 +119,7 @@ def main(chosen_model_no=9, num_items_displayed=10):
 
             wv = model.wv
 
-        wv.init_sims(replace=True)
+        wv.init_sims(replace=True)  # TODO choose whether to normalize vectors
 
         index2word_set = set(wv.index2word)
 
