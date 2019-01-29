@@ -3,7 +3,7 @@ import logging
 import numpy as np
 from gensim.corpora import Dictionary
 from gensim.matutils import unitvec
-from gensim.models import TfidfModel, LsiModel, RpModel, LdaModel, HdpModel, KeyedVectors
+from gensim.models import TfidfModel, LsiModel, RpModel, LdaModel, HdpModel, KeyedVectors, Word2Vec
 from gensim.similarities import MatrixSimilarity
 
 from doc2vec_model import reformat_similarity_scores_for_doc2vec
@@ -38,6 +38,8 @@ def word_averaging_list(wv, text_list):
 
 
 def main(chosen_model_no=9, num_items_displayed=10):
+    logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+
     possible_model_names = [
         'tf_idf',  # 0
         'lsi_bow', 'lsi_tf_idf',  # 1, 2
@@ -104,11 +106,19 @@ def main(chosen_model_no=9, num_items_displayed=10):
         pass
 
     elif chosen_model_name == 'word2vec':
-        model = None
+        use_a_lot_of_ram = False
 
-        # Warning: this takes a lot of time and uses a ton of RAM!
-        print('Loading Word2Vec based on Google News')
-        wv = KeyedVectors.load_word2vec_format('data/GoogleNews-vectors-negative300.bin.gz', binary=True)
+        if use_a_lot_of_ram:
+            model = None
+
+            print('Loading Word2Vec based on Google News')
+            # Warning: this takes a lot of time and uses a ton of RAM!
+            wv = KeyedVectors.load_word2vec_format('data/GoogleNews-vectors-negative300.bin.gz', binary=True)
+        else:
+            model = Word2Vec(documents)
+
+            wv = model.wv
+
         wv.init_sims(replace=True)
 
         index2word_set = set(wv.index2word)
@@ -159,7 +169,10 @@ def main(chosen_model_no=9, num_items_displayed=10):
                 reference_sentence = steam_tokens[app_id]
                 reference_sentence = filter_out_words_not_in_vocabulary(reference_sentence, index2word_set)
 
-                similarity_scores[app_id] = wv.n_similarity(query_sentence, reference_sentence)
+                try:
+                    similarity_scores[app_id] = wv.n_similarity(query_sentence, reference_sentence)
+                except ZeroDivisionError:
+                    similarity_scores[app_id] = 0
 
         print_most_similar_sentences(similarity_scores, num_items_displayed=num_items_displayed)
 
