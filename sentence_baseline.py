@@ -22,7 +22,8 @@ def word_averaging(wv, words):
         if isinstance(word, np.ndarray):
             mean.append(word)
         elif word in wv.vocab:
-            mean.append(wv.syn0norm[wv.vocab[word].index])
+            # TODO IMPORTANT Why use the normalized word vectors instead of the raw word vectors?
+            mean.append(wv.vectors_norm[wv.vocab[word].index])
             all_words.add(wv.vocab[word].index)
 
     if not mean:
