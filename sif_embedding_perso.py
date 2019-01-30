@@ -8,6 +8,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 from SIF_embedding import remove_pc
 from sentence_models import filter_out_words_not_in_vocabulary
+from sentence_models import get_store_url_as_bb_code
 from utils import load_tokens, load_game_names
 
 
@@ -120,7 +121,8 @@ def main(compute_from_scratch=True, use_unit_vectors=False):
 
         for j in sorted_ind:
             app_id = app_ids[j]
-            print('{:2}) similarity: {:.1%} ; appID: {} ({})'.format(j, v[j], app_id, game_names[app_id]))
+            store_url = get_store_url_as_bb_code(app_id)
+            print('{:2}) similarity: {:.1%} ; appID: {} ({})'.format(j, v[j], store_url, game_names[app_id]))
 
     return
 
