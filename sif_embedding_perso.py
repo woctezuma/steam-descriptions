@@ -12,7 +12,7 @@ from sentence_models import get_store_url_as_bb_code
 from utils import load_tokens, load_game_names
 
 
-def main(compute_from_scratch=True, use_unit_vectors=False, alpha=1e-3):
+def main(compute_from_scratch=True, use_unit_vectors=False, alpha=1e-3, num_removed_components=1):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
     game_names, _ = load_game_names(include_genres=False, include_categories=False)
@@ -94,7 +94,7 @@ def main(compute_from_scratch=True, use_unit_vectors=False, alpha=1e-3):
         # Reference: https://stackoverflow.com/a/11620982
         X = np.where(np.isfinite(X), X, 0)
 
-        X = remove_pc(X)
+        X = remove_pc(X, npc=num_removed_components)
 
         np.save('data/X.npy', X)
 
