@@ -109,7 +109,6 @@ def main(chosen_model_no=9, num_items_displayed=10, use_spacy=True):
     elif chosen_model_name.startswith('hdp'):
         print('Hierarchical Dirichlet Process (HDP)')
         model = HdpModel(pre_processed_corpus, id2word=dct)
-        pass
 
     elif chosen_model_name == 'word2vec':
         use_a_lot_of_ram = False
