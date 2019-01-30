@@ -88,7 +88,11 @@ def main(compute_from_scratch=True, use_unit_vectors=False, alpha=1e-3, num_remo
                 else:
                     weighted_vector += weight * wv.vectors[wv.vocab[word].index]
 
-            sentence_vector[app_id] = weighted_vector / len(reference_sentence)
+            if len(reference_sentence) > 0:
+                sentence_vector[app_id] = weighted_vector / len(reference_sentence)
+            else:
+                sentence_vector[app_id] = weighted_vector
+
             X[i, :] = sentence_vector[app_id]
 
         # Reference: https://stackoverflow.com/a/11620982
