@@ -12,7 +12,8 @@ from sentence_models import get_store_url_as_bb_code
 from utils import load_tokens, load_game_names
 
 
-def main(compute_from_scratch=False, use_unit_vectors=False, alpha=1e-3, num_removed_components=0):
+def main(compute_from_scratch=True, use_unit_vectors=False, alpha=1e-3, num_removed_components=0,
+         count_words_out_of_vocabulary=False):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
     game_names, _ = load_game_names(include_genres=False, include_categories=False)
@@ -50,14 +51,15 @@ def main(compute_from_scratch=False, use_unit_vectors=False, alpha=1e-3, num_rem
                 print('[{}/{}] appID = {} ({})'.format(counter, num_games, app_id, game_names[app_id]))
 
             reference_sentence = steam_tokens[app_id]
-            reference_sentence = filter_out_words_not_in_vocabulary(reference_sentence, index2word_set)
+            if not count_words_out_of_vocabulary:
+                # This has an impact on the value of 'total_counter'.
+                reference_sentence = filter_out_words_not_in_vocabulary(reference_sentence, index2word_set)
 
             for word in reference_sentence:
-                if word in wv.vocab:
-                    try:
-                        word_counter[word] += 1
-                    except KeyError:
-                        word_counter[word] = 1
+                try:
+                    word_counter[word] += 1
+                except KeyError:
+                    word_counter[word] = 1
 
         total_counter = sum(word_counter.values())
 
