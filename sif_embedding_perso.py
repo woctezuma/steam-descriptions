@@ -1,4 +1,5 @@
 import logging
+import math
 from time import time
 
 import numpy as np
@@ -13,7 +14,7 @@ from utils import load_tokens, load_game_names
 
 
 def main(compute_from_scratch=True, use_unit_vectors=False, alpha=1e-3, num_removed_components=0,
-         count_words_out_of_vocabulary=False):
+         count_words_out_of_vocabulary=True, use_idf_weights=True):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
     game_names, _ = load_game_names(include_genres=False, include_categories=False)
@@ -42,6 +43,7 @@ def main(compute_from_scratch=True, use_unit_vectors=False, alpha=1e-3, num_remo
         num_games = len(steam_tokens)
 
         word_counter = {}
+        document_per_word_counter = {}
 
         counter = 0
         for app_id in steam_tokens:
@@ -61,8 +63,20 @@ def main(compute_from_scratch=True, use_unit_vectors=False, alpha=1e-3, num_remo
                 except KeyError:
                     word_counter[word] = 1
 
+            for word in set(reference_sentence):
+                try:
+                    document_per_word_counter[word] += 1
+                except KeyError:
+                    document_per_word_counter[word] = 1
+
         total_counter = sum(word_counter.values())
 
+        # Inverse Document Frequency (IDF)
+        idf = {}
+        for word in document_per_word_counter:
+            idf[word] = math.log((1 + num_games) / (1 + document_per_word_counter[word]))
+
+        # Word frequency. Caveat: over the whole corpus!
         word_frequency = dict()
         for word in word_counter:
             word_frequency[word] = word_counter[word] / total_counter
@@ -83,7 +97,10 @@ def main(compute_from_scratch=True, use_unit_vectors=False, alpha=1e-3, num_remo
             weighted_vector = np.zeros(wv.vector_size)
 
             for word in reference_sentence:
-                weight = (alpha / (alpha + word_frequency[word]))
+                if use_idf_weights:
+                    weight = idf[word]
+                else:
+                    weight = (alpha / (alpha + word_frequency[word]))
 
                 # TODO IMPORTANT Why use the normalized word vectors instead of the raw word vectors?
                 if use_unit_vectors:
