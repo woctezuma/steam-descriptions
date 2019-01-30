@@ -24,9 +24,10 @@ def main(compute_from_scratch=True, use_unit_vectors=False, alpha=1e-3, num_remo
     if compute_from_scratch:
 
         dct = Dictionary(documents)
-        print(len(dct))
+        print('Dictionary size (before trimming): {}'.format(len(dct)))
+
         dct.filter_extremes(no_below=5, no_above=0.5)  # TODO choose parameters
-        print(len(dct))
+        print('Dictionary size (after trimming): {}'.format(len(dct)))
 
         model = Word2Vec(documents)
 
