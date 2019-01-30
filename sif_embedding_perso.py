@@ -99,13 +99,15 @@ def main(compute_from_scratch=False, use_unit_vectors=False, alpha=1e-3, num_rem
         # Reference: https://stackoverflow.com/a/11620982
         X = np.where(np.isfinite(X), X, 0)
 
-        if num_removed_components > 0:
-            X = remove_pc(X, npc=num_removed_components)
-
+        print('Saving the sentence embedding.')
         np.save('data/X.npy', X)
 
     else:
+        print('Loading the sentence embedding.')
         X = np.load('data/X.npy', mmap_mode='r')
+
+    if num_removed_components > 0:
+        X = remove_pc(X, npc=num_removed_components)
 
     app_ids = list(steam_tokens.keys())
 
