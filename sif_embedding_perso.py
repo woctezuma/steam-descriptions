@@ -12,7 +12,7 @@ from sentence_models import get_store_url_as_bb_code
 from utils import load_tokens, load_game_names
 
 
-def main(compute_from_scratch=True, use_unit_vectors=False):
+def main(compute_from_scratch=True, use_unit_vectors=False, alpha=1e-3):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
     game_names, _ = load_game_names(include_genres=False, include_categories=False)
@@ -66,7 +66,6 @@ def main(compute_from_scratch=True, use_unit_vectors=False):
 
         sentence_vector = {}
         X = np.zeros([num_games, wv.vector_size])
-        alpha = 1e-3
 
         counter = 0
         for (i, app_id) in enumerate(steam_tokens.keys()):
