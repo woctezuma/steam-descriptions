@@ -113,9 +113,11 @@ def main(compute_from_scratch=True, use_unit_vectors=False, alpha=1e-3, num_remo
 
                 # TODO IMPORTANT Why use the normalized word vectors instead of the raw word vectors?
                 if use_unit_vectors:
-                    weighted_vector += weight * wv.vectors_norm[wv.vocab[word].index]
+                    word_vector = wv.vectors_norm[wv.vocab[word].index]
                 else:
-                    weighted_vector += weight * wv.vectors[wv.vocab[word].index]
+                    word_vector = wv.vectors[wv.vocab[word].index]
+
+                weighted_vector += weight * word_vector
 
             if len(reference_sentence) > 0:
                 sentence_vector[app_id] = weighted_vector / num_words_in_reference_sentence
