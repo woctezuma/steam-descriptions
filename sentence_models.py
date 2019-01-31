@@ -62,7 +62,10 @@ def compute_similarity_with_all_other_steam_sentences(query_app_id, steam_tokens
         if filter_out_words_out_of_vocabulary:
             reference_sentence = filter_out_words_not_in_vocabulary(reference_sentence, index2word_set)
 
-        similarity_scores[app_id] = model.wv.n_similarity(query_sentence, reference_sentence)
+        try:
+            similarity_scores[app_id] = model.wv.n_similarity(query_sentence, reference_sentence)
+        except ZeroDivisionError:
+            similarity_scores[app_id] = 0
 
     return similarity_scores
 
