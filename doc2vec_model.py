@@ -1,5 +1,6 @@
 import logging
 import multiprocessing
+import random
 from time import time
 
 from gensim.models import doc2vec
@@ -144,6 +145,13 @@ def apply_pipeline(train_from_scratch=True, avoid_inference=False,
                                 min_count=5,
                                 epochs=5,
                                 workers=multiprocessing.cpu_count())
+
+        # NB: Do not follow the piece of advice given in https://rare-technologies.com/doc2vec-tutorial/
+        # « I have obtained better results by iterating over the data several times and either:
+        #     1. randomizing the order of input sentences, or
+        #     2. manually controlling the learning rate over the course of several iterations. »
+        # Indeed, in my experience, this leads to buggy results. Moreover, this approach is not recommended according to
+        # https://stackoverflow.com/a/48080869
 
         model.save(get_doc_model_file_name())
     else:
