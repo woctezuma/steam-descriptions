@@ -1,5 +1,6 @@
 import logging
 import math
+import multiprocessing
 import random
 from time import time
 
@@ -37,7 +38,7 @@ def main(compute_from_scratch=True, use_unit_vectors=False, alpha=1e-3, num_remo
         dct.filter_extremes(no_below=5, no_above=0.5)  # TODO choose parameters
         print('Dictionary size (after trimming): {}'.format(len(dct)))
 
-        model = Word2Vec(documents)
+        model = Word2Vec(documents, workers=multiprocessing.cpu_count())
 
         wv = model.wv
 
