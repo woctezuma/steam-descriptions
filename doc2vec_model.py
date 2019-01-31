@@ -127,7 +127,7 @@ def check_analogy(model, pos, neg, num_items_displayed=10):
     return
 
 
-def apply_pipeline(train_from_scratch=True, avoid_inference=False,
+def apply_pipeline(train_from_scratch=True, avoid_inference=False, shuffle_corpus=True,
                    include_genres=False, include_categories=True, include_app_ids=True):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
@@ -136,6 +136,13 @@ def apply_pipeline(train_from_scratch=True, avoid_inference=False,
     steam_tokens = load_tokens()
 
     documents = list(read_corpus(steam_tokens, game_tags, include_app_ids))
+
+    if shuffle_corpus:
+        # « Only if the training data has some existing clumping – like all the examples with certain words/topics are
+        # stuck together at the top or bottom of the ordering – is native ordering likely to cause training problems.
+        # And in that case, a single shuffle, before any training, should be enough to remove the clumping. »
+        # Reference: https://stackoverflow.com/a/48080869
+        random.shuffle(documents)
 
     if train_from_scratch:
         print('Creating a new Doc2Vec model from scratch.')
@@ -217,5 +224,5 @@ def get_doc_model_entity(model):
 
 
 if __name__ == '__main__':
-    apply_pipeline(train_from_scratch=True, avoid_inference=False,
+    apply_pipeline(train_from_scratch=True, avoid_inference=False, shuffle_corpus=True,
                    include_genres=False, include_categories=False, include_app_ids=True)

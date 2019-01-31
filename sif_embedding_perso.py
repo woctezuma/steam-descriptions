@@ -1,5 +1,6 @@
 import logging
 import math
+import random
 from time import time
 
 import numpy as np
@@ -14,7 +15,7 @@ from utils import load_tokens, load_game_names
 
 
 def main(compute_from_scratch=True, use_unit_vectors=False, alpha=1e-3, num_removed_components=0,
-         count_words_out_of_vocabulary=True, use_idf_weights=True):
+         count_words_out_of_vocabulary=True, use_idf_weights=True, shuffle_corpus=True):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
     game_names, _ = load_game_names(include_genres=False, include_categories=False)
@@ -22,6 +23,13 @@ def main(compute_from_scratch=True, use_unit_vectors=False, alpha=1e-3, num_remo
     steam_tokens = load_tokens()
 
     documents = list(steam_tokens.values())
+
+    if shuffle_corpus:
+        # « Only if the training data has some existing clumping – like all the examples with certain words/topics are
+        # stuck together at the top or bottom of the ordering – is native ordering likely to cause training problems.
+        # And in that case, a single shuffle, before any training, should be enough to remove the clumping. »
+        # Reference: https://stackoverflow.com/a/48080869
+        random.shuffle(documents)
 
     if compute_from_scratch:
 
