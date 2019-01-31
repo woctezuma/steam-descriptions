@@ -1,4 +1,3 @@
-import math
 import operator
 
 import numpy as np
@@ -40,7 +39,7 @@ def compute_similarity_with_all_other_steam_sentences(query_app_id, steam_tokens
         model = Word2Vec.load(get_word_model_file_name())
 
     if game_names is None:
-        game_names = load_game_names()
+        game_names, _ = load_game_names()
 
     index2word_set = get_word_model_vocabulary(model)
 
@@ -63,7 +62,10 @@ def compute_similarity_with_all_other_steam_sentences(query_app_id, steam_tokens
         if filter_out_words_out_of_vocabulary:
             reference_sentence = filter_out_words_not_in_vocabulary(reference_sentence, index2word_set)
 
-        similarity_scores[app_id] = model.wv.n_similarity(query_sentence, reference_sentence)
+        try:
+            similarity_scores[app_id] = model.wv.n_similarity(query_sentence, reference_sentence)
+        except ZeroDivisionError:
+            similarity_scores[app_id] = 0
 
     return similarity_scores
 
@@ -75,7 +77,7 @@ def get_store_url_as_bb_code(app_id):
 
 def print_most_similar_sentences(similarity_scores, num_items_displayed=10, game_names=None):
     if game_names is None:
-        game_names = load_game_names()
+        game_names, _ = load_game_names()
 
     counter = 0
 
@@ -83,19 +85,22 @@ def print_most_similar_sentences(similarity_scores, num_items_displayed=10, game
 
     similar_app_ids = []
 
+    print('Top similar games:')
+
     for app_id, sim_value in sorted_similarity_scores:
+        counter += 1
 
         store_url = get_store_url_as_bb_code(app_id)
 
-        if math.isclose(sim_value, 1):
-            print('Query appID: {} ({})'.format(store_url, game_names[app_id]))
-            print('\n\nTop similar games:')
-        else:
-            counter += 1
-            print('{:2}) appID: {} ({})'.format(counter, store_url, game_names[app_id]))
-            similar_app_ids.append(app_id)
+        try:
+            print('{:2}) similarity: {:.1%} ; appID: {} ({})'.format(counter, sim_value, store_url, game_names[app_id]))
+        except KeyError:
+            print('{:2}) similarity: {:.1%} ; tag: {}'.format(counter, sim_value, app_id))
+
+        similar_app_ids.append(app_id)
 
         if counter >= num_items_displayed:
+            print()
             break
 
     return similar_app_ids

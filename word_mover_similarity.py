@@ -7,7 +7,7 @@ from sentence_models import print_most_similar_sentences
 from utils import get_word_model_file_name, load_tokens
 
 
-def reformat_similarity_scores(similarity_scores_as_tuples, candidates):
+def reformat_similarity_scores_for_wmd(similarity_scores_as_tuples, candidates):
     similarity_scores = dict()
     for (app_id, my_tuple) in zip(candidates, sorted(similarity_scores_as_tuples, key=operator.itemgetter(0))):
         similarity_scores[app_id] = my_tuple[1]
@@ -15,7 +15,7 @@ def reformat_similarity_scores(similarity_scores_as_tuples, candidates):
     return similarity_scores
 
 
-def compute_similarity_with_candidate_sentences_using_wmd(query_app_id=None, steam_tokens=None, model=None,
+def compute_similarity_with_candidate_sentences_using_wmd(query_app_id, steam_tokens=None, model=None,
                                                           candidates=None):
     if steam_tokens is None:
         steam_tokens = load_tokens()
@@ -37,7 +37,7 @@ def compute_similarity_with_candidate_sentences_using_wmd(query_app_id=None, ste
 
     similarity_scores_as_tuples = instance[query]
 
-    similarity_scores = reformat_similarity_scores(similarity_scores_as_tuples, candidates)
+    similarity_scores = reformat_similarity_scores_for_wmd(similarity_scores_as_tuples, candidates)
     print_most_similar_sentences(similarity_scores)
 
     return similarity_scores
