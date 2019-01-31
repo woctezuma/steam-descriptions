@@ -25,10 +25,7 @@ def main(compute_from_scratch=True, use_unit_vectors=False, alpha=1e-3, num_remo
     documents = list(steam_tokens.values())
 
     if shuffle_corpus:
-        # « Only if the training data has some existing clumping – like all the examples with certain words/topics are
-        # stuck together at the top or bottom of the ordering – is native ordering likely to cause training problems.
-        # And in that case, a single shuffle, before any training, should be enough to remove the clumping. »
-        # Reference: https://stackoverflow.com/a/48080869
+        # Useful for Doc2Vec in 'doc2vec_model.py'. It might be useful for other methods.
         random.shuffle(documents)
 
     if compute_from_scratch:
