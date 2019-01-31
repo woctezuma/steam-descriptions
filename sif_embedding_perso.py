@@ -16,7 +16,7 @@ from utils import load_tokens, load_game_names
 
 
 def main(compute_from_scratch=True, use_unit_vectors=False, alpha=1e-3, num_removed_components_for_sentence_vectors=0,
-         pre_process_word_vectors=True, num_removed_components_for_word_vectors=1,
+         pre_process_word_vectors=False, num_removed_components_for_word_vectors=0,
          count_words_out_of_vocabulary=True, use_idf_weights=True, shuffle_corpus=True):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
