@@ -3,3 +3,4 @@ gensim==3.7.0
 pyemd
 numpy
 sklearn==0.0
+spacy==2.0.18

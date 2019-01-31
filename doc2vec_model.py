@@ -1,5 +1,6 @@
 import logging
 import multiprocessing
+import random
 from time import time
 
 from gensim.models import doc2vec
@@ -126,7 +127,7 @@ def check_analogy(model, pos, neg, num_items_displayed=10):
     return
 
 
-def apply_pipeline(train_from_scratch=True, avoid_inference=False,
+def apply_pipeline(train_from_scratch=True, avoid_inference=False, shuffle_corpus=True,
                    include_genres=False, include_categories=True, include_app_ids=True):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
@@ -136,14 +137,28 @@ def apply_pipeline(train_from_scratch=True, avoid_inference=False,
 
     documents = list(read_corpus(steam_tokens, game_tags, include_app_ids))
 
+    if shuffle_corpus:
+        # « Only if the training data has some existing clumping – like all the examples with certain words/topics are
+        # stuck together at the top or bottom of the ordering – is native ordering likely to cause training problems.
+        # And in that case, a single shuffle, before any training, should be enough to remove the clumping. »
+        # Reference: https://stackoverflow.com/a/48080869
+        random.shuffle(documents)
+
     if train_from_scratch:
         print('Creating a new Doc2Vec model from scratch.')
         model = doc2vec.Doc2Vec(documents,
                                 vector_size=100,
                                 window=5,
                                 min_count=5,
-                                epochs=5,
+                                epochs=20,
                                 workers=multiprocessing.cpu_count())
+
+        # NB: Do not follow the piece of advice given in https://rare-technologies.com/doc2vec-tutorial/
+        # « I have obtained better results by iterating over the data several times and either:
+        #     1. randomizing the order of input sentences, or
+        #     2. manually controlling the learning rate over the course of several iterations. »
+        # Indeed, in my experience, this leads to buggy results. Moreover, this approach is not recommended according to
+        # https://stackoverflow.com/a/48080869
 
         model.save(get_doc_model_file_name())
     else:
@@ -209,5 +224,5 @@ def get_doc_model_entity(model):
 
 
 if __name__ == '__main__':
-    apply_pipeline(train_from_scratch=True, avoid_inference=False,
+    apply_pipeline(train_from_scratch=True, avoid_inference=False, shuffle_corpus=True,
                    include_genres=False, include_categories=False, include_app_ids=True)
