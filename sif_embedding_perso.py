@@ -97,7 +97,11 @@ def main(compute_from_scratch=True, use_unit_vectors=False, alpha=1e-3, num_remo
                 print('[{}/{}] appID = {} ({})'.format(counter, num_games, app_id, game_names[app_id]))
 
             reference_sentence = steam_tokens[app_id]
+            num_words_in_reference_sentence = len(reference_sentence)
+
             reference_sentence = filter_out_words_not_in_vocabulary(reference_sentence, index2word_set)
+            if not count_words_out_of_vocabulary:
+                num_words_in_reference_sentence = len(reference_sentence)
 
             weighted_vector = np.zeros(wv.vector_size)
 
@@ -114,7 +118,7 @@ def main(compute_from_scratch=True, use_unit_vectors=False, alpha=1e-3, num_remo
                     weighted_vector += weight * wv.vectors[wv.vocab[word].index]
 
             if len(reference_sentence) > 0:
-                sentence_vector[app_id] = weighted_vector / len(reference_sentence)
+                sentence_vector[app_id] = weighted_vector / num_words_in_reference_sentence
             else:
                 sentence_vector[app_id] = weighted_vector
 
