@@ -14,7 +14,8 @@ from sentence_models import get_store_url_as_bb_code
 from utils import load_tokens, load_game_names
 
 
-def main(compute_from_scratch=True, use_unit_vectors=False, alpha=1e-3, num_removed_components=0,
+def main(compute_from_scratch=True, use_unit_vectors=False, alpha=1e-3, num_removed_components_for_sentence_vectors=0,
+         pre_process_word_vectors=True, num_removed_components_for_word_vectors=1,
          count_words_out_of_vocabulary=True, use_idf_weights=True, shuffle_corpus=True):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
@@ -39,6 +40,18 @@ def main(compute_from_scratch=True, use_unit_vectors=False, alpha=1e-3, num_remo
         model = Word2Vec(documents)
 
         wv = model.wv
+
+        if pre_process_word_vectors:
+            # Jiaqi Mu, Pramod Viswanath, All-but-the-Top: Simple and Effective Postprocessing for Word Representations,
+            # in: ICLR 2018 conference.
+            # Reference: https://openreview.net/forum?id=HkuGJ3kCb
+
+            wv.vectors -= np.array(wv.vectors).mean(axis=0)
+
+            if num_removed_components_for_word_vectors > 0:
+                wv.vectors = remove_pc(wv.vectors, npc=num_removed_components_for_word_vectors)
+
+            wv.init_sims()
 
         if use_unit_vectors:
             wv.init_sims(replace=True)  # TODO IMPORTANT choose whether to normalize vectors
@@ -136,8 +149,8 @@ def main(compute_from_scratch=True, use_unit_vectors=False, alpha=1e-3, num_remo
         print('Loading the sentence embedding.')
         X = np.load('data/X.npy', mmap_mode='r')
 
-    if num_removed_components > 0:
-        X = remove_pc(X, npc=num_removed_components)
+    if num_removed_components_for_sentence_vectors > 0:
+        X = remove_pc(X, npc=num_removed_components_for_sentence_vectors)
 
     app_ids = list(steam_tokens.keys())
 
