@@ -22,8 +22,11 @@ pip install -r requirements.txt
 Each game is described by the concatenation of:
  
 -   a short text below its banner on the Steam store:
+
 ![short game description](https://i.imgur.com/qSiN3Hh.png)
+
 -   a long text in the section called "About the game":
+
 ![long game description](https://i.imgur.com/zpLKiqh.png)
 
 The text is tokenized with [spaCy](https://spacy.io/).
