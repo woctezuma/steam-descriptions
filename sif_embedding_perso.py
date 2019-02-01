@@ -15,9 +15,15 @@ from sentence_models import get_store_url_as_bb_code
 from utils import load_tokens, load_game_names
 
 
-def main(compute_from_scratch=True, use_unit_vectors=False, alpha=1e-3, num_removed_components_for_sentence_vectors=0,
-         pre_process_word_vectors=False, num_removed_components_for_word_vectors=0,
-         count_words_out_of_vocabulary=True, use_idf_weights=True, shuffle_corpus=True):
+def main(compute_from_scratch=True,
+         use_unit_vectors=False,
+         alpha=1e-3,  # the parameter in the SIF weighting scheme, usually in the range [3e-5, 3e-3]
+         num_removed_components_for_sentence_vectors=0,  # num of principal components to remove in SIF weighting scheme
+         pre_process_word_vectors=False,
+         num_removed_components_for_word_vectors=0,
+         count_words_out_of_vocabulary=True,
+         use_idf_weights=True,
+         shuffle_corpus=True):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
     game_names, _ = load_game_names(include_genres=False, include_categories=False)

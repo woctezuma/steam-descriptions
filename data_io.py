@@ -1,3 +1,4 @@
+# Code from: Sanjeev Arora, Yingyu Liang, Tengyu Ma, "A Simple but Tough-to-Beat Baseline for Sentence Embeddings", 2016
 # Reference: https://github.com/PrincetonML/SIF
 
 
@@ -22,6 +23,7 @@ def get_word_map(text_file):
 
 
 def get_word_weight(weight_file, a=1e-3):
+    # word2weight['str'] is the weight for the word 'str'
     if a <= 0:  # when the parameter makes no sense, use unweighted
         a = 1.0
 
@@ -62,6 +64,7 @@ def look_up_idx(words, w):
 
 
 def get_weight(words, word2weight):
+    # weight4ind[i] is the weight for the i-th word
     weight4ind = {}
     for word, ind in words.iteritems():
         if word in word2weight:
@@ -90,7 +93,7 @@ def sentences2idx(sentences, words):
     :param sentences: a list of sentences
     :param words: a dictionary, words['str'] is the indices of the word 'str'
     :return: x1, m1.    x1[i, :] is the word indices in sentence i,
-                        m1[i,:] is the mask for sentence i (0 means no word at the location)
+                        m1[i,:] is the binary mask for sentence i (0 means that there is no word at the location)
     """
     seq1 = []
     for i in sentences:
@@ -100,6 +103,7 @@ def sentences2idx(sentences, words):
 
 
 def seq2weight(seq, mask, weight4ind):
+    # get word weights
     weight = np.zeros(seq.shape).astype('float32')
     for i in range(seq.shape[0]):
         for j in range(seq.shape[1]):
