@@ -77,7 +77,6 @@ def main(chosen_model_no=9, num_items_displayed=10, use_spacy=True):
     elif chosen_model_name.startswith('lda'):
         print('Latent Dirichlet Allocation (LDA)')
         model = LdaModel(pre_processed_corpus, id2word=dct, num_topics=100)  # TODO choose num_topics
-        pass
 
     elif chosen_model_name.startswith('hdp'):
         print('Hierarchical Dirichlet Process (HDP)')
