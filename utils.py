@@ -66,14 +66,11 @@ def load_game_names(include_genres=True, include_categories=True):
     return game_names, game_tags
 
 
-def load_tokens(filter_a_few_special_characters=False):
+def load_tokens():
     print('Loading tokens')
 
     with open(get_token_file_name(), 'r') as f:
         steam_tokens = json.load(f)
-
-    if filter_a_few_special_characters:
-        steam_tokens = filter_tokens(steam_tokens)
 
     return steam_tokens
 
@@ -131,24 +128,6 @@ def compute_tokens(steam_sentences=None, save_to_disk=False, use_spacy=False):
             json.dump(steam_tokens, f)
 
     return steam_tokens
-
-
-def filter_tokens(steam_tokens):
-    print('Filtering tokens')
-
-    characters_to_filter = ['_']
-
-    filtered_steam_tokens = {}
-
-    for app_id in steam_tokens:
-        game_tokens = steam_tokens[app_id]
-
-        filtered_tokens = [word for word in game_tokens
-                           if all(character not in word for character in characters_to_filter)]
-
-        filtered_steam_tokens[app_id] = filtered_tokens
-
-    return filtered_steam_tokens
 
 
 if __name__ == '__main__':
