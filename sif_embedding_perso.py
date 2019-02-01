@@ -126,6 +126,7 @@ def main(compute_from_scratch=True,
 
             reference_sentence = filter_out_words_not_in_vocabulary(reference_sentence, index2word_set)
             if not count_words_out_of_vocabulary:
+                # NB: Out-of-vocabulary words are not counted in https://stackoverflow.com/a/35092200
                 num_words_in_reference_sentence = len(reference_sentence)
 
             weighted_vector = np.zeros(wv.vector_size)
@@ -138,6 +139,7 @@ def main(compute_from_scratch=True,
 
                 # TODO IMPORTANT Why use the normalized word vectors instead of the raw word vectors?
                 if use_unit_vectors:
+                    # Reference: https://github.com/RaRe-Technologies/movie-plots-by-genre
                     word_vector = wv.vectors_norm[wv.vocab[word].index]
                 else:
                     word_vector = wv.vectors[wv.vocab[word].index]
