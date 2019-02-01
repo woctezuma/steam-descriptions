@@ -1,3 +1,5 @@
+# Objective: learn a Word2Vec model
+
 from pprint import pprint
 
 from gensim.models import Word2Vec

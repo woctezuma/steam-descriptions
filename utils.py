@@ -1,3 +1,5 @@
+# Objective: load and tokenize data with spaCy
+
 import json
 
 import spacy

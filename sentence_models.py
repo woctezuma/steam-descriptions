@@ -1,3 +1,6 @@
+# Objective: learn a Word2Vec model, then build a sentence embedding based on an average of word embeddings.
+# Reference: n_similarity() in Gensim Word2Vec (https://radimrehurek.com/gensim/models/word2vec.html)
+
 import operator
 
 import numpy as np

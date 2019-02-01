@@ -1,3 +1,8 @@
+# Objective: learn a Word2Vec model, then build a sentence embedding based on a weighted average of word embeddings.
+# References:
+# [1] Sanjeev Arora, Yingyu Liang, Tengyu Ma, "A Simple but Tough-to-Beat Baseline for Sentence Embeddings", 2016.
+# [2] Jiaqi Mu, Pramod Viswanath, All-but-the-Top: Simple and Effective Postprocessing for Word Representations, 2018.
+
 import logging
 import math
 import multiprocessing

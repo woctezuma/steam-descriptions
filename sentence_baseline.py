@@ -1,3 +1,5 @@
+# Objective: try different methods to retrieve semantically similar sentences, including a few based on Word2Vec models.
+
 import logging
 
 import numpy as np

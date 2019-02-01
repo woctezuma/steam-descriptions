@@ -1,3 +1,4 @@
+# Code from: Sanjeev Arora, Yingyu Liang, Tengyu Ma, "A Simple but Tough-to-Beat Baseline for Sentence Embeddings", 2016
 # Reference: https://github.com/PrincetonML/SIF
 
 import numpy as np
