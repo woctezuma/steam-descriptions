@@ -5,7 +5,8 @@ import logging
 import spacy
 from gensim.corpora import Dictionary
 from gensim.models import TfidfModel, LsiModel, RpModel, LdaModel, HdpModel, KeyedVectors, Word2Vec
-from gensim.similarities import MatrixSimilarity
+from gensim.models import WordEmbeddingSimilarityIndex
+from gensim.similarities import MatrixSimilarity, SparseTermSimilarityMatrix, SoftCosineSimilarity
 from spacy.tokens import Doc
 
 from doc2vec_model import reformat_similarity_scores_for_doc2vec
@@ -13,7 +14,7 @@ from sentence_models import print_most_similar_sentences, filter_out_words_not_i
 from utils import load_tokens, load_game_names
 
 
-def main(chosen_model_no=9, num_items_displayed=10, use_spacy=True):
+def main(chosen_model_no=9, num_items_displayed=10, use_spacy=True, use_soft_cosine_similarity=True):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
     possible_model_names = [
@@ -111,7 +112,13 @@ def main(chosen_model_no=9, num_items_displayed=10, use_spacy=True):
         model = None
 
     if chosen_model_name != 'word2vec':
-        index = MatrixSimilarity(model[pre_processed_corpus], num_best=10, num_features=len(dct))
+        if not use_soft_cosine_similarity:
+            index = MatrixSimilarity(model[pre_processed_corpus], num_best=10, num_features=len(dct))
+        else:
+            w2v_model = Word2Vec(documents)
+            similarity_index = WordEmbeddingSimilarityIndex(w2v_model.wv)
+            similarity_matrix = SparseTermSimilarityMatrix(similarity_index, dct, tfidf_model, nonzero_limit=100)
+            index = SoftCosineSimilarity(model[pre_processed_corpus], similarity_matrix)
     else:
         index = None
 
@@ -137,6 +144,9 @@ def main(chosen_model_no=9, num_items_displayed=10, use_spacy=True):
                 pre_preoccessed_vec = vec_bow
             vec_lsi = model[pre_preoccessed_vec]
             sims = index[vec_lsi]
+
+            if use_soft_cosine_similarity:
+                sims = enumerate(sims)
 
             similarity_scores_as_tuples = [(app_ids[i], sim) for (i, sim) in sims]
             similarity_scores = reformat_similarity_scores_for_doc2vec(similarity_scores_as_tuples)
