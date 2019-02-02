@@ -1,9 +1,9 @@
+# Objective: try different methods to retrieve semantically similar sentences, including a few based on Word2Vec models.
+
 import logging
 
-import numpy as np
 import spacy
 from gensim.corpora import Dictionary
-from gensim.matutils import unitvec
 from gensim.models import TfidfModel, LsiModel, RpModel, LdaModel, HdpModel, KeyedVectors, Word2Vec
 from gensim.similarities import MatrixSimilarity
 from spacy.tokens import Doc
@@ -11,33 +11,6 @@ from spacy.tokens import Doc
 from doc2vec_model import reformat_similarity_scores_for_doc2vec
 from sentence_models import print_most_similar_sentences, filter_out_words_not_in_vocabulary
 from utils import load_tokens, load_game_names
-
-
-def word_averaging(wv, words):
-    # Reference: https://github.com/RaRe-Technologies/movie-plots-by-genre
-
-    all_words, mean = set(), []
-
-    for word in words:
-        if isinstance(word, np.ndarray):
-            mean.append(word)
-        elif word in wv.vocab:
-            # TODO IMPORTANT Why use the normalized word vectors instead of the raw word vectors?
-            mean.append(wv.vectors_norm[wv.vocab[word].index])
-            all_words.add(wv.vocab[word].index)
-
-    if not mean:
-        logging.warning("cannot compute similarity with no input %s", words)
-        # FIXME: remove these examples in pre-processing
-        return np.zeros(wv.layer1_size, )
-
-    mean = unitvec(np.array(mean).mean(axis=0)).astype(np.float32)
-    return mean
-
-
-def word_averaging_list(wv, text_list):
-    # Reference: https://github.com/RaRe-Technologies/movie-plots-by-genre
-    return np.vstack([word_averaging(wv, review) for review in text_list])
 
 
 def main(chosen_model_no=9, num_items_displayed=10, use_spacy=True):
@@ -104,7 +77,6 @@ def main(chosen_model_no=9, num_items_displayed=10, use_spacy=True):
     elif chosen_model_name.startswith('lda'):
         print('Latent Dirichlet Allocation (LDA)')
         model = LdaModel(pre_processed_corpus, id2word=dct, num_topics=100)  # TODO choose num_topics
-        pass
 
     elif chosen_model_name.startswith('hdp'):
         print('Hierarchical Dirichlet Process (HDP)')

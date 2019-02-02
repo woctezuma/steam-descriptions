@@ -1,3 +1,5 @@
+# Objective: learn a Doc2Vec model
+
 import logging
 import multiprocessing
 import random

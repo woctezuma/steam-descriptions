@@ -1,3 +1,5 @@
+# Objective: learn a Word2Vec model, then build a sentence embedding based on Word Mover Distance.
+
 import operator
 
 from gensim.models import Word2Vec

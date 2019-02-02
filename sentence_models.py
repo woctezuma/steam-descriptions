@@ -1,28 +1,12 @@
+# Objective: learn a Word2Vec model, then build a sentence embedding based on an average of word embeddings.
+# Reference: n_similarity() in Gensim Word2Vec (https://radimrehurek.com/gensim/models/word2vec.html)
+
 import operator
 
-import numpy as np
 from gensim.models import Word2Vec
 
 from utils import get_word_model_file_name, load_game_names, load_tokens
 from word_model import get_word_model_vocabulary
-
-
-def avg_feature_vector(tokenized_sentence, model):
-    # Reference: https://stackoverflow.com/a/35092200
-
-    index2word_set = get_word_model_vocabulary(model)
-
-    num_features = model.wv.vector_size
-
-    feature_vec = np.zeros((num_features,), dtype='float32')
-    n_words = 0
-    for word in tokenized_sentence:
-        if word in index2word_set:
-            n_words += 1
-            feature_vec = np.add(feature_vec, model.wv[word])
-    if n_words > 0:
-        feature_vec = np.divide(feature_vec, n_words)
-    return feature_vec
 
 
 def filter_out_words_not_in_vocabulary(tokenized_sentence, index2word_set):

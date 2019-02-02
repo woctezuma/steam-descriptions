@@ -1,3 +1,8 @@
+# Objective: learn a Word2Vec model, then build a sentence embedding based on a weighted average of word embeddings.
+# References:
+# [1] Sanjeev Arora, Yingyu Liang, Tengyu Ma, "A Simple but Tough-to-Beat Baseline for Sentence Embeddings", 2016.
+# [2] Jiaqi Mu, Pramod Viswanath, All-but-the-Top: Simple and Effective Postprocessing for Word Representations, 2018.
+
 import logging
 import math
 import multiprocessing
@@ -15,9 +20,15 @@ from sentence_models import get_store_url_as_bb_code
 from utils import load_tokens, load_game_names
 
 
-def main(compute_from_scratch=True, use_unit_vectors=False, alpha=1e-3, num_removed_components_for_sentence_vectors=0,
-         pre_process_word_vectors=False, num_removed_components_for_word_vectors=0,
-         count_words_out_of_vocabulary=True, use_idf_weights=True, shuffle_corpus=True):
+def main(compute_from_scratch=True,
+         use_unit_vectors=False,
+         alpha=1e-3,  # the parameter in the SIF weighting scheme, usually in the range [3e-5, 3e-3]
+         num_removed_components_for_sentence_vectors=0,  # num of principal components to remove in SIF weighting scheme
+         pre_process_word_vectors=False,
+         num_removed_components_for_word_vectors=0,
+         count_words_out_of_vocabulary=True,
+         use_idf_weights=True,
+         shuffle_corpus=True):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
     game_names, _ = load_game_names(include_genres=False, include_categories=False)
@@ -115,6 +126,7 @@ def main(compute_from_scratch=True, use_unit_vectors=False, alpha=1e-3, num_remo
 
             reference_sentence = filter_out_words_not_in_vocabulary(reference_sentence, index2word_set)
             if not count_words_out_of_vocabulary:
+                # NB: Out-of-vocabulary words are not counted in https://stackoverflow.com/a/35092200
                 num_words_in_reference_sentence = len(reference_sentence)
 
             weighted_vector = np.zeros(wv.vector_size)
@@ -127,6 +139,7 @@ def main(compute_from_scratch=True, use_unit_vectors=False, alpha=1e-3, num_remo
 
                 # TODO IMPORTANT Why use the normalized word vectors instead of the raw word vectors?
                 if use_unit_vectors:
+                    # Reference: https://github.com/RaRe-Technologies/movie-plots-by-genre
                     word_vector = wv.vectors_norm[wv.vocab[word].index]
                 else:
                     word_vector = wv.vectors[wv.vocab[word].index]
