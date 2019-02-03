@@ -1,19 +1,21 @@
 # Objective: load data, tokenize & embed sentences with the 'flair' library @ https://github.com/zalandoresearch/flair/
 
 import json
+from time import time
 
 from flair.embeddings import WordEmbeddings, FlairEmbeddings, DocumentPoolEmbeddings, Sentence
-from gensim.parsing.preprocessing import strip_tags
 
-from utils import load_raw_data, get_embedding_file_name
+from utils import load_game_names, load_tokens, get_embedding_file_name
 
 
-def compute_steam_embeddings(steam_sentences=None, save_to_disk=False):
-    if steam_sentences is None:
-        steam_sentences = load_raw_data()
+def compute_steam_embeddings(steam_tokens=None, save_to_disk=False):
+    if steam_tokens is None:
+        steam_tokens = load_tokens()
+
+    game_names, _ = load_game_names(include_genres=False, include_categories=False)
 
     counter = 0
-    num_games = len(steam_sentences)
+    num_games = len(steam_tokens)
 
     steam_embeddings = {}
 
@@ -27,23 +29,23 @@ def compute_steam_embeddings(steam_sentences=None, save_to_disk=False):
                                                   flair_embedding_backward,
                                                   flair_embedding_forward])
 
-    for app_id in steam_sentences:
-        game_data = steam_sentences[app_id]
+    start = time()
+
+    for app_id in steam_tokens:
+        game_tokens = steam_tokens[app_id]
+        game_name = game_names[app_id]
         counter += 1
 
-        if (counter % 1000) == 0:
-            print('[{}/{}] appID = {} ({})'.format(counter, num_games, app_id, game_data['name']))
+        if (counter % 1) == 0:
+            if counter > 1:
+                print('Elapsed time: {%.2f}' % (time() - start))
+            start = time()
+            print('[{}/{}] appID = {} ({})'.format(counter, num_games, app_id, game_name))
 
-        original_str = str(strip_tags(game_data['text']))
-
-        original_str = original_str.replace('\t', ' ')
-
-        # Reference: https://nicschrading.com/project/Intro-to-NLP-with-spaCy/
-        original_str = original_str.strip().replace('\n', ' ').replace('\r', ' ')
-        original_str = original_str.replace('&amp;', 'and').replace('&gt;', '>').replace('&lt;', '<')
+        game_str = ' '.join(game_tokens)
 
         # Tokenize the text with the 'flair' library
-        sentence = Sentence(original_str, use_tokenizer=True)
+        sentence = Sentence(game_str)
 
         # embed the sentence with our document embedding
         document_embeddings.embed(sentence)
@@ -58,4 +60,4 @@ def compute_steam_embeddings(steam_sentences=None, save_to_disk=False):
 
 
 if __name__ == '__main__':
-    steam_embeddings = compute_steam_embeddings()
+    steam_embeddings = compute_steam_embeddings(save_to_disk=True)
