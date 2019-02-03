@@ -22,6 +22,12 @@ def get_token_file_name():
     return file_name
 
 
+def get_embedding_file_name():
+    # Sentence embeddings computed with the 'flair' library @ https://github.com/zalandoresearch/flair/
+    file_name = get_data_folder() + 'flair_embeddings.json'
+    return file_name
+
+
 def get_word_model_file_name():
     file_name = get_data_folder() + 'word2vec.model'
     return file_name
