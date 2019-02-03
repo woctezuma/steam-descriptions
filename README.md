@@ -17,12 +17,6 @@ This repository contains Python code to retrieve semantically similar Steam game
 pip install -r requirements.txt
 ```
 
--   In case the installation of the `flair` package fails, manually install [PyTorch](https://pytorch.org/get-started/locally/), e.g. if you do not have a GPU compatible with CUDA:
-
-```bash
-pip install https://download.pytorch.org/whl/cpu/torch-1.0.0-cp37-cp37m-win_amd64.whl
-```
-
 ## Method
 
 Each game is described by the concatenation of:
