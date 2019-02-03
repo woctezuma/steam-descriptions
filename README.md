@@ -33,9 +33,9 @@ The text is tokenized with [spaCy](https://spacy.io/).
 The tokens are then fed as input to different methods to retrieve semantically similar game descriptions.
 
 For instance, a word embedding can be learnt with [Word2Vec](https://en.wikipedia.org/wiki/Word2vec) and then used for a
-sentence embedding based on weighted average.
+sentence embedding based on a weighted average of word embeddings.
 Or a document embedding can be learnt with [Doc2Vec](https://radimrehurek.com/gensim/models/doc2vec.html), although, in
-our experience, this is useful to learn document tags, e.g. a game genre, rather than to retrieve similar documents.
+our experience, this is more useful to learn document tags, e.g. game genres, rather than to retrieve similar documents.
 
 ## References
 
