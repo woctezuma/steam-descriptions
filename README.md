@@ -34,8 +34,11 @@ The tokens are then fed as input to different methods to retrieve semantically s
 
 For instance, a word embedding can be learnt with [Word2Vec](https://en.wikipedia.org/wiki/Word2vec) and then used for a
 sentence embedding based on a weighted average of word embeddings (cf. [`sif_embedding_perso.py`](sif_embedding_perso.py)).
+A [pre-trained GloVe](https://spacy.io/models/en#section-en_vectors_web_lg) embedding can also be used instead of the self-trained Word2Vec embedding.
+
 Or a document embedding can be learnt with [Doc2Vec](https://radimrehurek.com/gensim/models/doc2vec.html) (cf. [`doc2vec_model.py`](doc2vec_model.py)), although, in
 our experience, this is more useful to learn document tags, e.g. game genres, rather than to retrieve similar documents.
+
 Different baseline algorithms are suggested in [`sentence_baseline.py`](sentence_baseline.py).
 
 ## References
