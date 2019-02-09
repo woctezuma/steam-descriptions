@@ -53,6 +53,14 @@ def main(compute_from_scratch=True,
 
         wv = model.wv
 
+        # TODO Allow to use pre-trained GloVe vectors with spaCy, instead of the self-trained Word2Vec vectors
+        # import spacy
+        # from spacy.tokens import Doc
+        # nlp = spacy.load('en_core_web_lg')
+        # # nlp = spacy.load('en_vectors_web_lg') # TODO Reference: https://spacy.io/models/en#en_vectors_web_lg
+        # w = Doc(nlp.vocab, ['apple'])
+        # w.vector.shape
+
         if pre_process_word_vectors:
             # Jiaqi Mu, Pramod Viswanath, All-but-the-Top: Simple and Effective Postprocessing for Word Representations,
             # in: ICLR 2018 conference.
