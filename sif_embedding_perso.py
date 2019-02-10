@@ -73,8 +73,11 @@ def main(compute_from_scratch=True,
             # Reference: https://openreview.net/forum?id=HkuGJ3kCb
 
             if use_glove_with_spacy:
-                print('[Warning] We do not apply the pre-processing of word vectors to spaCy\'s GloVe embedding.')
-                # TODO maybe find a way to apply this
+                wv.vectors.data -= np.array(wv.vectors.data).mean(axis=0)
+
+                if num_removed_components_for_word_vectors > 0:
+                    wv.vectors.data = remove_pc(wv.vectors.data, npc=num_removed_components_for_word_vectors)
+
             else:
                 wv.vectors -= np.array(wv.vectors).mean(axis=0)
 
