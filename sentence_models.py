@@ -9,8 +9,13 @@ from utils import get_word_model_file_name, load_game_names, load_tokens
 from word_model import get_word_model_vocabulary
 
 
-def filter_out_words_not_in_vocabulary(tokenized_sentence, index2word_set):
-    filtered_tokenized_sentence = [word for word in tokenized_sentence if word in index2word_set]
+def filter_out_words_not_in_vocabulary(tokenized_sentence, index2word_set=None, wv_spacy=None):
+    if index2word_set is not None:
+        # Using Gensim for the Word2Vec word embedding
+        filtered_tokenized_sentence = [word for word in tokenized_sentence if word in index2word_set]
+    else:
+        # Using spaCy for the GloVe word embedding
+        filtered_tokenized_sentence = [word for word in tokenized_sentence if wv_spacy[word].has_vector]
     return filtered_tokenized_sentence
 
 

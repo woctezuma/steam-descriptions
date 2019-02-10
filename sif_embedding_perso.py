@@ -10,6 +10,7 @@ import random
 from time import time
 
 import numpy as np
+import spacy
 from gensim.corpora import Dictionary
 from gensim.models import Word2Vec
 from sklearn.metrics.pairwise import cosine_similarity
@@ -28,7 +29,8 @@ def main(compute_from_scratch=True,
          num_removed_components_for_word_vectors=0,
          count_words_out_of_vocabulary=True,
          use_idf_weights=True,
-         shuffle_corpus=True):
+         shuffle_corpus=True,
+         use_glove_with_spacy=False):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
     game_names, _ = load_game_names(include_genres=False, include_categories=False)
@@ -43,40 +45,53 @@ def main(compute_from_scratch=True,
 
     if compute_from_scratch:
 
-        dct = Dictionary(documents)
-        print('Dictionary size (before trimming): {}'.format(len(dct)))
+        if not use_glove_with_spacy:
+            # Use self-trained Word2Vec vectors
 
-        dct.filter_extremes(no_below=5, no_above=0.5)  # TODO choose parameters
-        print('Dictionary size (after trimming): {}'.format(len(dct)))
+            dct = Dictionary(documents)
+            print('Dictionary size (before trimming): {}'.format(len(dct)))
 
-        model = Word2Vec(documents, workers=multiprocessing.cpu_count())
+            dct.filter_extremes(no_below=5, no_above=0.5)  # TODO choose parameters
+            print('Dictionary size (after trimming): {}'.format(len(dct)))
 
-        wv = model.wv
+            model = Word2Vec(documents, workers=multiprocessing.cpu_count())
 
-        # TODO Allow to use pre-trained GloVe vectors with spaCy, instead of the self-trained Word2Vec vectors
-        # import spacy
-        # from spacy.tokens import Doc
-        # nlp = spacy.load('en_core_web_lg')
-        # # nlp = spacy.load('en_vectors_web_lg') # TODO Reference: https://spacy.io/models/en#en_vectors_web_lg
-        # w = Doc(nlp.vocab, ['apple'])
-        # w.vector.shape
+            wv = model.wv
+
+        else:
+            # Use pre-trained GloVe vectors loaded from spaCy
+            # Reference: https://spacy.io/models/en#en_vectors_web_lg
+
+            spacy_model_name = 'en_vectors_web_lg'  # either 'en_core_web_lg' or 'en_vectors_web_lg'
+            nlp = spacy.load(spacy_model_name)
+
+            wv = nlp.vocab
 
         if pre_process_word_vectors:
             # Jiaqi Mu, Pramod Viswanath, All-but-the-Top: Simple and Effective Postprocessing for Word Representations,
             # in: ICLR 2018 conference.
             # Reference: https://openreview.net/forum?id=HkuGJ3kCb
 
-            wv.vectors -= np.array(wv.vectors).mean(axis=0)
+            if use_glove_with_spacy:
+                print('[Warning] We do not apply the pre-processing of word vectors to spaCy\'s GloVe embedding.')
+                # TODO maybe find a way to apply this
+            else:
+                wv.vectors -= np.array(wv.vectors).mean(axis=0)
 
-            if num_removed_components_for_word_vectors > 0:
-                wv.vectors = remove_pc(wv.vectors, npc=num_removed_components_for_word_vectors)
+                if num_removed_components_for_word_vectors > 0:
+                    wv.vectors = remove_pc(wv.vectors, npc=num_removed_components_for_word_vectors)
 
-            wv.init_sims()
+                wv.init_sims()
 
-        if use_unit_vectors:
+        if use_unit_vectors and not use_glove_with_spacy:
+            # Pre-computations of unit word vectors, which replace the unnormalized word vectors. A priori not required
+            # here, because another part of the code takes care of it. A fortiori not required when using spaCy.
             wv.init_sims(replace=True)  # TODO IMPORTANT choose whether to normalize vectors
 
-        index2word_set = set(wv.index2word)
+        if not use_glove_with_spacy:
+            index2word_set = set(wv.index2word)
+        else:
+            index2word_set = None
 
         num_games = len(steam_tokens)
 
@@ -93,7 +108,7 @@ def main(compute_from_scratch=True,
             reference_sentence = steam_tokens[app_id]
             if not count_words_out_of_vocabulary:
                 # This has an impact on the value of 'total_counter'.
-                reference_sentence = filter_out_words_not_in_vocabulary(reference_sentence, index2word_set)
+                reference_sentence = filter_out_words_not_in_vocabulary(reference_sentence, index2word_set, wv)
 
             for word in reference_sentence:
                 try:
@@ -120,7 +135,11 @@ def main(compute_from_scratch=True,
             word_frequency[word] = word_counter[word] / total_counter
 
         sentence_vector = {}
-        X = np.zeros([num_games, wv.vector_size])
+        if not use_glove_with_spacy:
+            word_vector_length = wv.vector_size
+        else:
+            word_vector_length = wv.vectors_length
+        X = np.zeros([num_games, word_vector_length])
 
         counter = 0
         for (i, app_id) in enumerate(steam_tokens.keys()):
@@ -132,12 +151,12 @@ def main(compute_from_scratch=True,
             reference_sentence = steam_tokens[app_id]
             num_words_in_reference_sentence = len(reference_sentence)
 
-            reference_sentence = filter_out_words_not_in_vocabulary(reference_sentence, index2word_set)
+            reference_sentence = filter_out_words_not_in_vocabulary(reference_sentence, index2word_set, wv)
             if not count_words_out_of_vocabulary:
                 # NB: Out-of-vocabulary words are not counted in https://stackoverflow.com/a/35092200
                 num_words_in_reference_sentence = len(reference_sentence)
 
-            weighted_vector = np.zeros(wv.vector_size)
+            weighted_vector = np.zeros(word_vector_length)
 
             for word in reference_sentence:
                 if use_idf_weights:
@@ -146,11 +165,18 @@ def main(compute_from_scratch=True,
                     weight = (alpha / (alpha + word_frequency[word]))
 
                 # TODO IMPORTANT Why use the normalized word vectors instead of the raw word vectors?
-                if use_unit_vectors:
-                    # Reference: https://github.com/RaRe-Technologies/movie-plots-by-genre
-                    word_vector = wv.vectors_norm[wv.vocab[word].index]
+                if not use_glove_with_spacy:
+                    if use_unit_vectors:
+                        # Reference: https://github.com/RaRe-Technologies/movie-plots-by-genre
+                        word_vector = wv.vectors_norm[wv.vocab[word].index]
+                    else:
+                        word_vector = wv.vectors[wv.vocab[word].index]
                 else:
-                    word_vector = wv.vectors[wv.vocab[word].index]
+                    word_vector = wv.get_vector(word)
+                    if use_unit_vectors:
+                        word_vector_norm = wv[word].vector_norm
+                        if word_vector_norm > 0:
+                            word_vector = word_vector / word_vector_norm
 
                 weighted_vector += weight * word_vector
 
