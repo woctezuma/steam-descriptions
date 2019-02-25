@@ -29,7 +29,7 @@ Each game is described by the concatenation of:
 
 ![long game description](https://i.imgur.com/zpLKiqh.png)
 
-The text is tokenized with [spaCy](https://spacy.io/).
+The text is tokenized with [spaCy](https://spacy.io/) by running [`utils.py`](utils.py).
 The tokens are then fed as input to different methods to retrieve semantically similar game descriptions.
 
 For instance, a word embedding can be learnt with [Word2Vec](https://en.wikipedia.org/wiki/Word2vec) and then used for a
