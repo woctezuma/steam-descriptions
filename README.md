@@ -41,7 +41,7 @@ our experience, this is more useful to learn document tags, e.g. game genres, ra
 
 Different baseline algorithms are suggested in [`sentence_baseline.py`](sentence_baseline.py).
 
-Embeddings can also be computed with [Universal Sentence Encoder](https://tfhub.dev/google/universal-sentence-encoder/2) on [Google Colab](https://colab.research.google.com/) with [this notebook](steam_descriptions.ipynb).
+Embeddings can also be computed with [Universal Sentence Encoder](https://tfhub.dev/google/universal-sentence-encoder/2) on [Google Colab](https://colab.research.google.com/) with [this notebook](universal_sentence_encoder.ipynb).
 
 ## References
 
