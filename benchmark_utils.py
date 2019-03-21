@@ -19,6 +19,8 @@ def get_top_100_app_ids():
 def load_benchmarked_app_ids(append_hard_coded_app_ids=True):
     top_100_app_ids = get_top_100_app_ids()
 
+    # Append hard-coded appIDs
+
     additional_app_ids_as_str = ['620', '364470', '504230', '583950', '646570', '863550', '794600']
     additional_app_ids = [int(app_id) for app_id in additional_app_ids_as_str]
 
@@ -26,6 +28,17 @@ def load_benchmarked_app_ids(append_hard_coded_app_ids=True):
     if append_hard_coded_app_ids:
         for app_id in set(additional_app_ids).difference(top_100_app_ids):
             benchmarked_app_ids.append(app_id)
+
+    # Remove one hard-coded appID (323370: TERA, not available in my region, so I cannot access the game description)
+
+    removed_app_ids = [323370]
+
+    for app_id in removed_app_ids:
+        try:
+            index_to_remove = benchmarked_app_ids.index(app_id)
+            del benchmarked_app_ids[index_to_remove]
+        except ValueError:
+            pass
 
     return benchmarked_app_ids
 
