@@ -3,7 +3,8 @@ from time import time
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 
-from utils import get_data_folder, load_game_names
+from benchmark_utils import get_top_100_app_ids, print_ranking
+from utils import get_data_folder
 
 
 def get_embedding_file_name_prefix():
@@ -64,7 +65,7 @@ def get_query_descriptor(query_app_id, label_database=None, app_ids=None):
     return query_des
 
 
-def perform_knn_search(query_des, knn, num_neighbors=10):
+def perform_knn_search_with_vectors_as_input(query_des, knn, num_neighbors=10):
     start = time()
 
     if len(query_des.shape) == 1:
@@ -78,33 +79,17 @@ def perform_knn_search(query_des, knn, num_neighbors=10):
     return matches
 
 
-def format_knn_search_results(matches, app_ids=None, game_names=None):
+def transform_matches_to_app_ids(matches, app_ids=None):
     if app_ids is None:
         app_ids = load_embedding_app_ids()
 
-    if game_names is None:
-        game_names, _ = load_game_names(include_genres=False, include_categories=False)
-
-    formatted_results = []
+    matches_as_app_ids = []
 
     for row in matches:
         reference_app_id_counter = [app_ids[element] for element in row]
+        matches_as_app_ids.append(reference_app_id_counter)
 
-        reference_game_names = []
-        for app_id in reference_app_id_counter:
-
-            try:
-                game_name = game_names[str(app_id)]
-            except KeyError:
-                game_name = None
-
-            reference_game_names.append(game_name)
-
-        formatted_results_for_current_row = list(zip(reference_app_id_counter, reference_game_names))
-
-        formatted_results.append(formatted_results_for_current_row)
-
-    return formatted_results
+    return matches_as_app_ids
 
 
 def print_formatted_knn_search_results(formatted_results, query_app_id=None):
@@ -123,19 +108,46 @@ def print_formatted_knn_search_results(formatted_results, query_app_id=None):
     return
 
 
+def perform_knn_search_with_app_ids_as_input(query_app_ids,
+                                             label_database=None,
+                                             app_ids=None,
+                                             knn=None,
+                                             use_cosine_similarity=True,  # only taken into account if 'knn' is None
+                                             num_neighbors=10):
+    if label_database is None:
+        label_database = load_embedded_descriptions()
+
+    if app_ids is None:
+        app_ids = load_embedding_app_ids()
+
+    if knn is None:
+        knn = prepare_knn_search(label_database, use_cosine_similarity=use_cosine_similarity)
+
+    # From query appID to query feature vector
+    query_des = get_query_descriptor(query_app_ids, label_database, app_ids)
+
+    # Matching of feature vectors
+    matches = perform_knn_search_with_vectors_as_input(query_des, knn, num_neighbors)
+
+    # From feature matches to appID matches
+    matches_as_app_ids = transform_matches_to_app_ids(matches, app_ids)
+
+    return matches_as_app_ids
+
+
 if __name__ == '__main__':
-    app_ids = load_embedding_app_ids()
-    label_database = load_embedded_descriptions()
+    top_100_app_ids = get_top_100_app_ids()
 
-    game_names, _ = load_game_names(include_genres=False, include_categories=False)
+    query_app_ids = top_100_app_ids[:3]
+    use_cosine_similarity = True
+    num_neighbors = 10
+    only_print_banners = True
 
-    knn = prepare_knn_search(label_database, use_cosine_similarity=True)
+    matches_as_app_ids = perform_knn_search_with_app_ids_as_input(query_app_ids,
+                                                                  use_cosine_similarity=use_cosine_similarity,
+                                                                  num_neighbors=num_neighbors)
 
-    query_app_id = [620, 570]
-    query_des = get_query_descriptor(query_app_id, label_database, app_ids)
-
-    matches = perform_knn_search(query_des, knn, num_neighbors=10)
-
-    formatted_results = format_knn_search_results(matches, app_ids, game_names)
-
-    print_formatted_knn_search_results(formatted_results, query_app_id)
+    print_ranking(query_app_ids,
+                  matches_as_app_ids,
+                  num_elements_displayed=num_neighbors,
+                  only_print_banners=only_print_banners)
