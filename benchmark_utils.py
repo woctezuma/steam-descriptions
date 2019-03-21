@@ -16,6 +16,20 @@ def get_top_100_app_ids():
     return top_100_app_ids
 
 
+def load_benchmarked_app_ids(append_hard_coded_app_ids=True):
+    top_100_app_ids = get_top_100_app_ids()
+
+    additional_app_ids_as_str = ['620', '364470', '504230', '583950', '646570', '863550', '794600']
+    additional_app_ids = [int(app_id) for app_id in additional_app_ids_as_str]
+
+    benchmarked_app_ids = top_100_app_ids
+    if append_hard_coded_app_ids:
+        for app_id in set(additional_app_ids).difference(top_100_app_ids):
+            benchmarked_app_ids.append(app_id)
+
+    return benchmarked_app_ids
+
+
 def get_app_name(app_id, game_names=None):
     if game_names is None:
         game_names, _ = load_game_names(include_genres=False, include_categories=False)
@@ -75,4 +89,4 @@ def print_ranking(query_app_ids, reference_app_id_counters, num_elements_display
 
 
 if __name__ == '__main__':
-    top_100_app_ids = get_top_100_app_ids()
+    benchmarked_app_ids = load_benchmarked_app_ids(append_hard_coded_app_ids=True)
