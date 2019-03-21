@@ -3,7 +3,7 @@ from time import time
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 
-from benchmark_utils import get_top_100_app_ids, print_ranking
+from benchmark_utils import load_benchmarked_app_ids, print_ranking
 from utils import get_data_folder
 
 
@@ -136,9 +136,8 @@ def perform_knn_search_with_app_ids_as_input(query_app_ids,
 
 
 if __name__ == '__main__':
-    top_100_app_ids = get_top_100_app_ids()
+    query_app_ids = load_benchmarked_app_ids(append_hard_coded_app_ids=True)
 
-    query_app_ids = top_100_app_ids[:3]
     use_cosine_similarity = True
     num_neighbors = 10
     only_print_banners = True
