@@ -51,6 +51,7 @@ Results are shown with [`universal_sentence_encoder.py`](universal_sentence_enco
 -   [Tool: spaCy](https://spacy.io/)
 -   [Tool: Gensim](https://radimrehurek.com/gensim/)
 -   [Word2Vec](https://en.wikipedia.org/wiki/Word2vec)
+-   [Universal Sentence Encoder](https://tfhub.dev/google/universal-sentence-encoder/2)
 -   Sanjeev Arora, Yingyu Liang, Tengyu Ma, [A Simple but Tough-to-Beat Baseline for Sentence Embeddings](https://openreview.net/forum?id=SyK00v5xx), in: ICLR 2017 conference.
 
 <!-- Definitions -->
