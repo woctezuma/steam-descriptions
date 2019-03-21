@@ -7,17 +7,16 @@ import logging
 import math
 import multiprocessing
 import random
-from time import time
 
 import numpy as np
 import spacy
 from gensim.corpora import Dictionary
 from gensim.models import Word2Vec
-from sklearn.metrics.pairwise import cosine_similarity
 
 from SIF_embedding import remove_pc
+from benchmark_utils import load_benchmarked_app_ids, print_ranking
 from sentence_models import filter_out_words_not_in_vocabulary
-from sentence_models import get_store_url_as_bb_code
+from universal_sentence_encoder import perform_knn_search_with_app_ids_as_input
 from utils import load_tokens, load_game_names
 
 
@@ -30,7 +29,10 @@ def main(compute_from_scratch=True,
          count_words_out_of_vocabulary=True,
          use_idf_weights=True,
          shuffle_corpus=True,
-         use_glove_with_spacy=False):
+         use_glove_with_spacy=False,
+         use_cosine_similarity=True,
+         num_neighbors=10,
+         only_print_banners=True):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
     game_names, _ = load_game_names(include_genres=False, include_categories=False)
@@ -203,27 +205,20 @@ def main(compute_from_scratch=True,
     if num_removed_components_for_sentence_vectors > 0:
         X = remove_pc(X, npc=num_removed_components_for_sentence_vectors)
 
-    app_ids = list(steam_tokens.keys())
+    app_ids = list(int(app_id) for app_id in steam_tokens.keys())
 
-    query_app_ids = ['620', '364470', '504230', '583950', '646570', '863550', '794600']
-    query_indices = [app_ids.index(query_app_id) for query_app_id in query_app_ids]
+    query_app_ids = load_benchmarked_app_ids(append_hard_coded_app_ids=True)
 
-    start = time()
-    sim = cosine_similarity(X[query_indices, :], X)
-    print('Elapsed time: {%.2f}' % (time() - start))
+    matches_as_app_ids = perform_knn_search_with_app_ids_as_input(query_app_ids,
+                                                                  label_database=X,
+                                                                  app_ids=app_ids,
+                                                                  use_cosine_similarity=use_cosine_similarity,
+                                                                  num_neighbors=num_neighbors)
 
-    for (i, query_app_id) in enumerate(query_app_ids):
-        print('\nQuery appID: {} ({})'.format(query_app_id, game_names[query_app_id]))
-        v = sim[i, :]
-
-        # Reference: https://stackoverflow.com/a/23734295
-        ind = np.argpartition(v, -10)[-10:]
-        sorted_ind = reversed(ind[np.argsort(v[ind])])
-
-        for (rank, j) in enumerate(sorted_ind):
-            app_id = app_ids[j]
-            store_url = get_store_url_as_bb_code(app_id)
-            print('{:2}) similarity: {:.1%} ; appID: {} ({})'.format(rank + 1, v[j], store_url, game_names[app_id]))
+    print_ranking(query_app_ids,
+                  matches_as_app_ids,
+                  num_elements_displayed=num_neighbors,
+                  only_print_banners=only_print_banners)
 
     return
 
