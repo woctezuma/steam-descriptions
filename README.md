@@ -44,8 +44,15 @@ Different baseline algorithms are suggested in [`sentence_baseline.py`](sentence
 Embeddings can also be computed with [Universal Sentence Encoder](https://tfhub.dev/google/universal-sentence-encoder/2) on [Google Colab](https://colab.research.google.com/) with [this notebook](universal_sentence_encoder.ipynb).
 Results are shown with [`universal_sentence_encoder.py`](universal_sentence_encoder.py). 
 
+## Results
+
+An in-depth commentary is provided on the [Wiki](https://github.com/woctezuma/steam-descriptions/wiki/Commentary).
+
+Results can be accessed from the [Wiki homepage](https://github.com/woctezuma/steam-descriptions/wiki/).
+
 ## References
 
+-   [My answer on StackOverlow](https://stackoverflow.com/a/54330582/), about sentence embeddings
 -   [Tutorial on the official website of 'gensim' module](https://radimrehurek.com/gensim/models/word2vec.html)
 -   [Tutorial on a blog](http://kavita-ganesan.com/gensim-word2vec-tutorial-starter-code/)
 -   [Tool: spaCy](https://spacy.io/)
