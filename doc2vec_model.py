@@ -5,9 +5,13 @@ import multiprocessing
 import random
 from time import time
 
+import numpy as np
 from gensim.models import doc2vec
 
+from benchmark_utils import load_benchmarked_app_ids, print_ranking
 from sentence_models import print_most_similar_sentences
+from universal_sentence_encoder import perform_knn_search_with_vectors_as_input
+from universal_sentence_encoder import prepare_knn_search, transform_matches_to_app_ids
 from utils import load_tokens, load_game_names, get_doc_model_file_name
 from word_model import compute_similarity_using_word2vec_model
 
@@ -130,7 +134,8 @@ def check_analogy(model, pos, neg, num_items_displayed=10):
 
 
 def apply_pipeline(train_from_scratch=True, avoid_inference=False, shuffle_corpus=True,
-                   include_genres=False, include_categories=True, include_app_ids=True):
+                   include_genres=False, include_categories=True, include_app_ids=True,
+                   verbose=False):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
     game_names, game_tags = load_game_names(include_genres, include_categories)
@@ -169,52 +174,94 @@ def apply_pipeline(train_from_scratch=True, avoid_inference=False, shuffle_corpu
 
     # Test doc2vec
 
-    try:
-        # Spelunky + (Slay the Spire) - (Dream Quest)
-        check_analogy(model, pos=['239350', '646570'], neg=['557410'])
-    except TypeError:
-        pass
+    if verbose:
 
-    try:
-        # Half-Life + (Witcher 2) - (Witcher)
-        check_analogy(model, pos=['70', '20920'], neg=['20900'])
-    except TypeError:
-        pass
+        try:
+            # Spelunky + (Slay the Spire) - (Dream Quest)
+            check_analogy(model, pos=['239350', '646570'], neg=['557410'])
+        except TypeError:
+            pass
 
-    query_app_ids = ['620', '364470', '504230', '583950', '646570', '863550', '794600']
+        try:
+            # Half-Life + (Witcher 2) - (Witcher)
+            check_analogy(model, pos=['70', '20920'], neg=['20900'])
+        except TypeError:
+            pass
 
-    for query_app_id in query_app_ids:
-        print('Query appID: {} ({})'.format(query_app_id, game_names[query_app_id]))
-        compute_similarity_using_doc2vec_model(query_app_id, steam_tokens, model,
-                                               avoid_inference=avoid_inference,
-                                               num_items_displayed=10)
+        query_app_ids = ['620', '364470', '504230', '583950', '646570', '863550', '794600']
 
-    # Check the relevance of the corresponding word2vec
-    for query_word in ['anime', 'fun', 'violent']:
-        compute_similarity_using_word2vec_model(query_word, steam_tokens, model)
-
-    entity = get_doc_model_entity(model)
-    tag_entity = set(tag for tag in entity if 'appID_' not in tag)
-
-    print(tag_entity)
-
-    query_tags = ['In-App Purchases', 'Free to Play', 'Violent', 'Early Access']
-
-    for query_tag in tag_entity.intersection(query_tags):
         for query_app_id in query_app_ids:
-            try:
-                sim = model.docvecs.similarity(get_tag_prefix() + query_app_id, query_tag)
-                print('Similarity = {:.0%} for tag {} vs. appID {} ({})'.format(sim, query_tag, query_app_id,
-                                                                                game_names[query_app_id]))
-            except KeyError:
-                pass
+            print('Query appID: {} ({})'.format(query_app_id, game_names[query_app_id]))
+            compute_similarity_using_doc2vec_model(query_app_id, steam_tokens, model,
+                                                   avoid_inference=avoid_inference,
+                                                   num_items_displayed=10)
 
-    num_items_displayed = 3
-    for query_tag in tag_entity:
-        print('\nTag: {}'.format(query_tag))
-        similarity_scores_as_tuples = model.docvecs.most_similar(positive=query_tag, topn=num_items_displayed)
-        similarity_scores = reformat_similarity_scores_for_doc2vec(similarity_scores_as_tuples)
-        print_most_similar_sentences(similarity_scores, num_items_displayed=num_items_displayed)
+        # Check the relevance of the corresponding word2vec
+        for query_word in ['anime', 'fun', 'violent']:
+            compute_similarity_using_word2vec_model(query_word, steam_tokens, model)
+
+        entity = get_doc_model_entity(model)
+        tag_entity = set(tag for tag in entity if 'appID_' not in tag)
+
+        print(tag_entity)
+
+        query_tags = ['In-App Purchases', 'Free to Play', 'Violent', 'Early Access']
+
+        for query_tag in tag_entity.intersection(query_tags):
+            for query_app_id in query_app_ids:
+                try:
+                    sim = model.docvecs.similarity(get_tag_prefix() + query_app_id, query_tag)
+                    print('Similarity = {:.0%} for tag {} vs. appID {} ({})'.format(sim, query_tag, query_app_id,
+                                                                                    game_names[query_app_id]))
+                except KeyError:
+                    pass
+
+        num_items_displayed = 3
+        for query_tag in tag_entity:
+            print('\nTag: {}'.format(query_tag))
+            similarity_scores_as_tuples = model.docvecs.most_similar(positive=query_tag, topn=num_items_displayed)
+            similarity_scores = reformat_similarity_scores_for_doc2vec(similarity_scores_as_tuples)
+            print_most_similar_sentences(similarity_scores, num_items_displayed=num_items_displayed)
+
+    # Top 100
+
+    query_app_ids = load_benchmarked_app_ids(append_hard_coded_app_ids=True)
+
+    num_neighbors = 10
+    only_print_banners = True
+    use_cosine_similarity = True
+
+    label_database = np.array(model.docvecs.vectors_docs)
+    app_ids = [int(doctag[len(get_tag_prefix()):]) for doctag in model.docvecs.doctags.keys()]
+
+    knn = prepare_knn_search(label_database, use_cosine_similarity=use_cosine_similarity)
+
+    query_des = None
+    for query_app_id in query_app_ids:
+        if avoid_inference:
+            inferred_vector = label_database[app_ids.index(query_app_id)]
+        else:
+            # From query appID to query feature vector
+            query = steam_tokens[str(query_app_id)]
+            # Caveat: « Subsequent calls to this function may infer different representations for the same document. »
+            # Reference: https://radimrehurek.com/gensim/models/doc2vec.html#gensim.models.doc2vec.Doc2Vec.infer_vector
+            inferred_vector = model.infer_vector(query)
+
+        if query_des is None:
+            query_des = inferred_vector
+        else:
+            query_des = np.vstack((query_des, inferred_vector))
+
+    # Matching of feature vectors
+    matches = perform_knn_search_with_vectors_as_input(query_des, knn, num_neighbors)
+
+    # From feature matches to appID matches
+    matches_as_app_ids = transform_matches_to_app_ids(matches, app_ids)
+
+    print_ranking(query_app_ids,
+                  matches_as_app_ids,
+                  num_elements_displayed=num_neighbors,
+                  only_print_banners=only_print_banners)
 
     return
 
