@@ -232,7 +232,15 @@ def apply_pipeline(train_from_scratch=True, avoid_inference=False, shuffle_corpu
     use_cosine_similarity = True
 
     label_database = np.array(model.docvecs.vectors_docs)
-    app_ids = [int(doctag[len(get_tag_prefix()):]) for doctag in model.docvecs.doctags.keys()]
+    doc_tags = list(model.docvecs.doctags.keys())
+
+    init_indices = np.array(range(len(doc_tags)))
+    bool_indices_to_remove = list(map(lambda x: not x.startswith(get_tag_prefix()), doc_tags))
+    indices_to_remove = init_indices[bool_indices_to_remove]
+    label_database = np.delete(label_database, indices_to_remove, axis=0)
+
+    app_ids = [int(doc_tag[len(get_tag_prefix()):]) for doc_tag in doc_tags
+               if doc_tag.startswith(get_tag_prefix())]
 
     knn = prepare_knn_search(label_database, use_cosine_similarity=use_cosine_similarity)
 
