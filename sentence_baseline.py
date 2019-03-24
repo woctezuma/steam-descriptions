@@ -78,7 +78,7 @@ def main(chosen_model_no=9, num_items_displayed=10, use_spacy=True, use_soft_cos
     elif chosen_model_name.startswith('rp'):
         print('Random Projections (RP)')
         if num_topics is None:
-            num_topics = 300
+            num_topics = 100
         model = RpModel(pre_processed_corpus, id2word=dct, num_topics=num_topics)
 
     elif chosen_model_name.startswith('lda'):
