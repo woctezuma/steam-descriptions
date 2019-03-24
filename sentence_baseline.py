@@ -14,7 +14,8 @@ from sentence_models import print_most_similar_sentences, filter_out_words_not_i
 from utils import load_tokens, load_game_names
 
 
-def main(chosen_model_no=9, num_items_displayed=10, use_spacy=True, use_soft_cosine_similarity=True):
+def main(chosen_model_no=9, num_items_displayed=10, use_spacy=True, use_soft_cosine_similarity=True,
+         num_topics=None, no_below=5, no_above=0.5, normalize_vectors=False):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
     possible_model_names = [
@@ -38,7 +39,7 @@ def main(chosen_model_no=9, num_items_displayed=10, use_spacy=True, use_soft_cos
 
     dct = Dictionary(documents)
     print(len(dct))
-    dct.filter_extremes(no_below=5, no_above=0.5)  # TODO choose parameters
+    dct.filter_extremes(no_below=no_below, no_above=no_above)
     print(len(dct))
 
     corpus = [dct.doc2bow(doc) for doc in documents]
@@ -47,7 +48,7 @@ def main(chosen_model_no=9, num_items_displayed=10, use_spacy=True, use_soft_cos
 
     pre_process_corpus_with_tf_idf = chosen_model_name.endswith('_tf_idf')
 
-    tfidf_model = TfidfModel(corpus, id2word=dct, normalize=False)  # TODO choose whether to normalize
+    tfidf_model = TfidfModel(corpus, id2word=dct, normalize=normalize_vectors)
 
     if pre_process_corpus_with_tf_idf:
         # Caveat: the leading underscore is important. Do not use this pre-processing if the chosen model is Tf-Idf!
@@ -69,15 +70,21 @@ def main(chosen_model_no=9, num_items_displayed=10, use_spacy=True, use_soft_cos
 
     elif chosen_model_name.startswith('lsi'):
         print('Latent Semantic Indexing (LSI/LSA)')
-        model = LsiModel(pre_processed_corpus, id2word=dct, num_topics=200)  # TODO choose num_topics
+        if num_topics is None:
+            num_topics = 200
+        model = LsiModel(pre_processed_corpus, id2word=dct, num_topics=num_topics)
 
     elif chosen_model_name.startswith('rp'):
         print('Random Projections (RP)')
-        model = RpModel(pre_processed_corpus, id2word=dct, num_topics=300)  # TODO choose num_topics
+        if num_topics is None:
+            num_topics = 300
+        model = RpModel(pre_processed_corpus, id2word=dct, num_topics=num_topics)
 
     elif chosen_model_name.startswith('lda'):
         print('Latent Dirichlet Allocation (LDA)')
-        model = LdaModel(pre_processed_corpus, id2word=dct, num_topics=100)  # TODO choose num_topics
+        if num_topics is None:
+            num_topics = 100
+        model = LdaModel(pre_processed_corpus, id2word=dct, num_topics=num_topics)
 
     elif chosen_model_name.startswith('hdp'):
         print('Hierarchical Dirichlet Process (HDP)')
@@ -103,7 +110,7 @@ def main(chosen_model_no=9, num_items_displayed=10, use_spacy=True, use_soft_cos
                 wv = model.wv
 
         if not use_spacy:
-            wv.init_sims(replace=True)  # TODO choose whether to normalize vectors
+            wv.init_sims(replace=normalize_vectors)
 
             index2word_set = set(wv.index2word)
 
