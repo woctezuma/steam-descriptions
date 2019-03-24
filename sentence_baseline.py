@@ -136,8 +136,9 @@ def main(chosen_model_no=9, num_items_displayed=10, use_spacy=True, use_soft_cos
 
     matches_as_app_ids = []
 
-    for query_app_id in query_app_ids:
-        print('Query appID: {} ({})'.format(query_app_id, get_app_name(query_app_id, game_names)))
+    for query_count, query_app_id in enumerate(query_app_ids):
+        print('[{}/{}] Query appID: {} ({})'.format(query_count + 1, len(query_app_ids),
+                                                    query_app_id, get_app_name(query_app_id, game_names)))
 
         query = steam_tokens[str(query_app_id)]
 
