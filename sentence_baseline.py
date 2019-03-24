@@ -189,7 +189,8 @@ def main(chosen_model_no=9, num_items_displayed=10, use_spacy=True, use_soft_cos
                     except ZeroDivisionError:
                         similarity_scores[app_id] = 0
 
-        similar_app_ids = print_most_similar_sentences(similarity_scores, num_items_displayed=num_items_displayed)
+        similar_app_ids = print_most_similar_sentences(similarity_scores, num_items_displayed=num_items_displayed,
+                                                       verbose=False)
         matches_as_app_ids.append(similar_app_ids)
 
     print_ranking(query_app_ids,

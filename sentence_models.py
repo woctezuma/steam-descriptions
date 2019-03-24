@@ -64,7 +64,7 @@ def get_store_url_as_bb_code(app_id):
     return store_url
 
 
-def print_most_similar_sentences(similarity_scores, num_items_displayed=10, game_names=None):
+def print_most_similar_sentences(similarity_scores, num_items_displayed=10, game_names=None, verbose=True):
     if game_names is None:
         game_names, _ = load_game_names()
 
@@ -74,17 +74,20 @@ def print_most_similar_sentences(similarity_scores, num_items_displayed=10, game
 
     similar_app_ids = []
 
-    print('Top similar games:')
+    if verbose:
+        print('Top similar games:')
 
     for app_id, sim_value in sorted_similarity_scores:
         counter += 1
 
         store_url = get_store_url_as_bb_code(app_id)
 
-        try:
-            print('{:2}) similarity: {:.1%} ; appID: {} ({})'.format(counter, sim_value, store_url, game_names[app_id]))
-        except KeyError:
-            print('{:2}) similarity: {:.1%} ; tag: {}'.format(counter, sim_value, app_id))
+        if verbose:
+            try:
+                print('{:2}) similarity: {:.1%} ; appID: {} ({})'.format(counter, sim_value, store_url,
+                                                                         game_names[app_id]))
+            except KeyError:
+                print('{:2}) similarity: {:.1%} ; tag: {}'.format(counter, sim_value, app_id))
 
         similar_app_ids.append(app_id)
 
