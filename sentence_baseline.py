@@ -9,6 +9,7 @@ from gensim.models import WordEmbeddingSimilarityIndex
 from gensim.similarities import MatrixSimilarity, SparseTermSimilarityMatrix, SoftCosineSimilarity
 from spacy.tokens import Doc
 
+from benchmark_utils import load_benchmarked_app_ids, print_ranking, get_app_name
 from doc2vec_model import reformat_similarity_scores_for_doc2vec
 from sentence_models import print_most_similar_sentences, filter_out_words_not_in_vocabulary
 from utils import load_tokens, load_game_names
@@ -129,14 +130,16 @@ def main(chosen_model_no=9, num_items_displayed=10, use_spacy=True, use_soft_cos
     else:
         index = None
 
-    query_app_ids = ['620', '364470', '504230', '583950', '646570', '863550', '794600']
+    query_app_ids = load_benchmarked_app_ids(append_hard_coded_app_ids=True)
 
-    app_ids = list(steam_tokens.keys())
+    app_ids = list(int(app_id) for app_id in steam_tokens.keys())
+
+    matches_as_app_ids = []
 
     for query_app_id in query_app_ids:
-        print('Query appID: {} ({})'.format(query_app_id, game_names[query_app_id]))
+        print('Query appID: {} ({})'.format(query_app_id, get_app_name(query_app_id, game_names)))
 
-        query = steam_tokens[query_app_id]
+        query = steam_tokens[str(query_app_id)]
 
         if use_spacy:
             spacy_query = Doc(nlp.vocab, query)
@@ -155,7 +158,7 @@ def main(chosen_model_no=9, num_items_displayed=10, use_spacy=True, use_soft_cos
             if use_soft_cosine_similarity:
                 sims = enumerate(sims)
 
-            similarity_scores_as_tuples = [(app_ids[i], sim) for (i, sim) in sims]
+            similarity_scores_as_tuples = [(str(app_ids[i]), sim) for (i, sim) in sims]
             similarity_scores = reformat_similarity_scores_for_doc2vec(similarity_scores_as_tuples)
         else:
             if use_spacy:
@@ -186,10 +189,21 @@ def main(chosen_model_no=9, num_items_displayed=10, use_spacy=True, use_soft_cos
                     except ZeroDivisionError:
                         similarity_scores[app_id] = 0
 
-        print_most_similar_sentences(similarity_scores, num_items_displayed=num_items_displayed)
+        similar_app_ids = print_most_similar_sentences(similarity_scores, num_items_displayed=num_items_displayed)
+        matches_as_app_ids.append(similar_app_ids)
+
+    print_ranking(query_app_ids,
+                  matches_as_app_ids,
+                  only_print_banners=True)
 
     return
 
 
 if __name__ == '__main__':
-    main()
+    main(chosen_model_no=0,
+         use_spacy=False,
+         use_soft_cosine_similarity=False,
+         num_topics=None,
+         no_below=5,
+         no_above=0.5,
+         normalize_vectors=False)
