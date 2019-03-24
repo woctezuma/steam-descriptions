@@ -21,7 +21,7 @@ def load_benchmarked_app_ids(append_hard_coded_app_ids=True):
 
     # Append hard-coded appIDs
 
-    additional_app_ids_as_str = ['620', '364470', '504230', '583950', '646570', '863550', '794600']
+    additional_app_ids_as_str = ['620', '364470', '504230', '583950', '646570', '863550', '794600', '814380']
     additional_app_ids = [int(app_id) for app_id in additional_app_ids_as_str]
 
     benchmarked_app_ids = top_100_app_ids
