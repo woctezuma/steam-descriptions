@@ -19,6 +19,9 @@ def main(chosen_model_no=9, num_items_displayed=10, use_spacy=True, use_soft_cos
          num_topics=None, no_below=5, no_above=0.5, normalize_vectors=False):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
+    if num_topics is None:
+        num_topics = 100
+
     possible_model_names = [
         'tf_idf',  # 0
         'lsi_bow', 'lsi_tf_idf',  # 1, 2
@@ -71,20 +74,14 @@ def main(chosen_model_no=9, num_items_displayed=10, use_spacy=True, use_soft_cos
 
     elif chosen_model_name.startswith('lsi'):
         print('Latent Semantic Indexing (LSI/LSA)')
-        if num_topics is None:
-            num_topics = 200
         model = LsiModel(pre_processed_corpus, id2word=dct, num_topics=num_topics)
 
     elif chosen_model_name.startswith('rp'):
         print('Random Projections (RP)')
-        if num_topics is None:
-            num_topics = 100
         model = RpModel(pre_processed_corpus, id2word=dct, num_topics=num_topics)
 
     elif chosen_model_name.startswith('lda'):
         print('Latent Dirichlet Allocation (LDA)')
-        if num_topics is None:
-            num_topics = 100
         model = LdaModel(pre_processed_corpus, id2word=dct, num_topics=num_topics)
 
     elif chosen_model_name.startswith('hdp'):
