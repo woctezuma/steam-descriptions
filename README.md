@@ -64,7 +64,7 @@ When using average of word embeddings as sentence embeddings:
 -   GloVe word embeddings lead to better results than Word2Vec.
 
 A table with scores for each major experiment is [available](https://github.com/woctezuma/steam-descriptions/wiki/steam_descriptions).
-For each game series, the score is the number of games from this serie which are found among the top 10 most similar games (excluding the query). The higher the score, the better the retrieval.
+For each game series, the score is the number of games from this series which are found among the top 10 most similar games (excluding the query). The higher the score, the better the retrieval.
 
 Results can be accessed from the [Wiki homepage](https://github.com/woctezuma/steam-descriptions/wiki/).
 
