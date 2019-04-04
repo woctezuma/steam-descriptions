@@ -33,8 +33,8 @@ def main(compute_from_scratch=True,
          use_glove_with_spacy=True,
          use_cosine_similarity=True,
          num_neighbors=10,
-         no_below=5,
-         no_above=0.5,
+         no_below=5,  # only relevant with Word2Vec, i.e. if use_glove_with_spacy is False
+         no_above=0.5,  # only relevant with Word2Vec, i.e. if use_glove_with_spacy is False
          only_print_banners=True):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
