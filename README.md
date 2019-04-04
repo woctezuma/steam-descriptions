@@ -8,7 +8,11 @@
 
 This repository contains Python code to retrieve semantically similar Steam games.
 
-TODO illustration
+![Witcher: similar store descriptions with Tf-Idf](https://github.com/woctezuma/steam-descriptions/wiki/img/fH7gjaS.png)
+---
+![Neverwinter: similar store descriptions with GloVe](https://github.com/woctezuma/steam-descriptions/wiki/img/PYzT6ol.png)
+---
+![Sekiro: similar store descriptions with GloVe](https://github.com/woctezuma/steam-descriptions/wiki/img/fuUtQ5Z.jpg)
 
 ## Requirements
 
