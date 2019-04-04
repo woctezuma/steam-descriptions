@@ -54,6 +54,7 @@ Overall, I would suggest to match store descriptions with:
 -   or a weighted average of GloVe word embeddings, with Tf-Idf reweighting, after removing some components:
     - either only [sentence components](https://openreview.net/forum?id=SyK00v5xx),
     - or both sentence and [word components](https://arxiv.org/abs/1702.01417) (for slighly better results, by a tiny margin).
+
 When using average of word embeddings as sentence embeddings:
 -   removing only sentence components provided a very large increase of the score (+105%),
 -   removing only word components provided a large increase of the score (+51%),
