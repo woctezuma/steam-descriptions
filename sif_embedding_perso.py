@@ -33,6 +33,8 @@ def main(compute_from_scratch=True,
          use_glove_with_spacy=True,
          use_cosine_similarity=True,
          num_neighbors=10,
+         no_below=5,
+         no_above=0.5,
          only_print_banners=True):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
@@ -54,7 +56,7 @@ def main(compute_from_scratch=True,
             dct = Dictionary(documents)
             print('Dictionary size (before trimming): {}'.format(len(dct)))
 
-            dct.filter_extremes(no_below=5, no_above=0.5)  # TODO choose parameters
+            dct.filter_extremes(no_below=no_below, no_above=no_above)
             print('Dictionary size (after trimming): {}'.format(len(dct)))
 
             model = Word2Vec(documents, workers=multiprocessing.cpu_count())
