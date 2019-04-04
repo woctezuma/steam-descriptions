@@ -84,7 +84,7 @@ Results can be accessed from the [Wiki homepage](https://github.com/woctezuma/st
 -   [GloVe](https://github.com/stanfordnlp/GloVe)
 -   [Universal Sentence Encoder](https://tfhub.dev/google/universal-sentence-encoder/2)
 -   Sanjeev Arora, Yingyu Liang, Tengyu Ma, [A Simple but Tough-to-Beat Baseline for Sentence Embeddings](https://openreview.net/forum?id=SyK00v5xx), in: ICLR 2017 conference.
--   Jiaqi Mu, Suma Bhat, Pramod Viswanath, [All-but-the-Top: Simple and Effective Postprocessing for Word Representations](https://arxiv.org/abs/1702.01417), in: arXiv preprint (2017).
+-   Jiaqi Mu, Pramod Viswanath, [All-but-the-Top: Simple and Effective Postprocessing for Word Representations](https://openreview.net/forum?id=HkuGJ3kCb), in: ICLR 2018 conference.
 
 <!-- Definitions -->
 
