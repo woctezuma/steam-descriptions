@@ -8,10 +8,6 @@
 
 This repository contains Python code to retrieve semantically similar Steam games.
 
-![Witcher: similar store descriptions with Tf-Idf](https://github.com/woctezuma/steam-descriptions/wiki/img/fH7gjaS.png)
----
-![Neverwinter: similar store descriptions with GloVe](https://github.com/woctezuma/steam-descriptions/wiki/img/PYzT6ol.png)
----
 ![Sekiro: similar store descriptions with GloVe](https://github.com/woctezuma/steam-descriptions/wiki/img/fuUtQ5Z.jpg)
 
 ## Requirements
@@ -55,9 +51,14 @@ Results are shown with [`universal_sentence_encoder.py`](universal_sentence_enco
 An in-depth commentary is provided on the [Wiki](https://github.com/woctezuma/steam-descriptions/wiki/Commentary).
 Overall, I would suggest to match store descriptions with:
 -   either Term Frequency * Inverse Document Frequency (Tf-Idf),
+
+![Witcher: similar store descriptions with Tf-Idf](https://github.com/woctezuma/steam-descriptions/wiki/img/fH7gjaS.png)
+
 -   or a weighted average of GloVe word embeddings, with Tf-Idf reweighting, after removing some components:
     - either only [sentence components](https://openreview.net/forum?id=SyK00v5xx),
     - or both sentence and [word components](https://arxiv.org/abs/1702.01417) (for slighly better results, by a tiny margin).
+
+![Neverwinter: similar store descriptions with GloVe](https://github.com/woctezuma/steam-descriptions/wiki/img/PYzT6ol.png)
 
 When using average of word embeddings as sentence embeddings:
 -   removing only sentence components provided a very large increase of the score (+105%),
@@ -83,6 +84,7 @@ Results can be accessed from the [Wiki homepage](https://github.com/woctezuma/st
 -   [GloVe](https://github.com/stanfordnlp/GloVe)
 -   [Universal Sentence Encoder](https://tfhub.dev/google/universal-sentence-encoder/2)
 -   Sanjeev Arora, Yingyu Liang, Tengyu Ma, [A Simple but Tough-to-Beat Baseline for Sentence Embeddings](https://openreview.net/forum?id=SyK00v5xx), in: ICLR 2017 conference.
+-   Jiaqi Mu, Suma Bhat, Pramod Viswanath, [All-but-the-Top: Simple and Effective Postprocessing for Word Representations](https://arxiv.org/abs/1702.01417), in: arXiv preprint (2017).
 
 <!-- Definitions -->
 
