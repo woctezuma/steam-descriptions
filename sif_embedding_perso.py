@@ -15,7 +15,7 @@ from gensim.models import Word2Vec
 
 from SIF_embedding import remove_pc
 from benchmark_utils import load_benchmarked_app_ids, print_ranking
-from hard_coded_ground_truth import compute_retrieval_score
+from hard_coded_ground_truth import compute_retrieval_score, plot_retrieval_scores
 from sentence_models import filter_out_words_not_in_vocabulary
 from universal_sentence_encoder import perform_knn_search_with_app_ids_as_input
 from utils import load_tokens, load_game_names
@@ -241,3 +241,5 @@ if __name__ == '__main__':
                                    num_removed_components_for_sentence_vectors=i)
 
     print(retrieval_scores)
+
+    plot_retrieval_scores(retrieval_scores)

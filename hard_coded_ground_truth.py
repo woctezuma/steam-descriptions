@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import steamspypi
 
 
@@ -110,6 +111,24 @@ def compute_retrieval_score(query_app_ids, reference_app_id_counters, num_elemen
     print('\nTotal retrieval score = {}'.format(retrieval_score))
 
     return retrieval_score
+
+
+def plot_retrieval_scores(d):
+    # Input d is a dictionary which maps the number of sentence components removed to the total retrieval score.
+
+    d_max = max(d.values())
+
+    d_arg_max = [i for i in d.keys() if d[i] == d_max]
+
+    plt.plot(list(d.keys()), list(d.values()))
+    plt.scatter(d_arg_max, [d[i] for i in d_arg_max], color='red')
+    plt.xlabel('Number of sentence components removed')
+    plt.ylabel('Retrieval score')
+    plt.title('Influence of the removal of sentence components')
+    plt.grid()
+    plt.show()
+
+    return
 
 
 if __name__ == '__main__':
