@@ -8,6 +8,8 @@
 
 This repository contains Python code to retrieve semantically similar Steam games.
 
+TODO illustration
+
 ## Requirements
 
 -   Install the latest version of [Python 3.X](https://www.python.org/downloads/).
@@ -47,6 +49,21 @@ Results are shown with [`universal_sentence_encoder.py`](universal_sentence_enco
 ## Results
 
 An in-depth commentary is provided on the [Wiki](https://github.com/woctezuma/steam-descriptions/wiki/Commentary).
+Overall, I would suggest to match store descriptions with:
+-   either Term Frequency * Inverse Document Frequency (Tf-Idf),
+-   or a weighted average of GloVe word embeddings, with Tf-Idf reweighting, after removing some components:
+    - either only [sentence components](https://openreview.net/forum?id=SyK00v5xx),
+    - or both sentence and [word components](https://arxiv.org/abs/1702.01417) (for slighly better results, by a tiny margin).
+When using average of word embeddings as sentence embeddings:
+-   removing only sentence components provided a very large increase of the score (+105%),
+-   removing only word components provided a large increase of the score (+51%),
+-   removing both components provided a very large increase of the score (+108%),
+-   relying on a weighted average instead of a simple average lead to better results,
+-   Tf-Idf reweighting lead to better results than [Smooth Inverse Frequency](https://openreview.net/forum?id=SyK00v5xx) reweighting,
+-   GloVe word embeddings lead to better results than Word2Vec.
+
+A table with scores for each major experiment is [available](https://github.com/woctezuma/steam-descriptions/wiki/steam_descriptions).
+For each game series, the score is the number of games from this serie which are found among the top 10 most similar games (excluding the query). The higher the score, the better the retrieval.
 
 Results can be accessed from the [Wiki homepage](https://github.com/woctezuma/steam-descriptions/wiki/).
 
