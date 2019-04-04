@@ -15,7 +15,7 @@ from sentence_models import print_most_similar_sentences, filter_out_words_not_i
 from utils import load_tokens, load_game_names
 
 
-def main(chosen_model_no=9, num_items_displayed=10, use_spacy=True, use_soft_cosine_similarity=True,
+def main(chosen_model_no=0, num_items_displayed=10, use_spacy=False, use_soft_cosine_similarity=False,
          num_topics=None, no_below=5, no_above=0.5, normalize_vectors=False):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
