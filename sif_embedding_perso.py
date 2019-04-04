@@ -15,6 +15,7 @@ from gensim.models import Word2Vec
 
 from SIF_embedding import remove_pc
 from benchmark_utils import load_benchmarked_app_ids, print_ranking
+from hard_coded_ground_truth import compute_retrieval_score
 from sentence_models import filter_out_words_not_in_vocabulary
 from universal_sentence_encoder import perform_knn_search_with_app_ids_as_input
 from utils import load_tokens, load_game_names
@@ -220,8 +221,23 @@ def main(compute_from_scratch=True,
                   num_elements_displayed=num_neighbors,
                   only_print_banners=only_print_banners)
 
-    return
+    retrieval_score = compute_retrieval_score(query_app_ids,
+                                              matches_as_app_ids,
+                                              num_elements_displayed=num_neighbors,
+                                              verbose=False)
+
+    return retrieval_score
 
 
 if __name__ == '__main__':
-    main()
+    # Initialize 'data/X.npy'
+    main(compute_from_scratch=True)
+
+    # Try different values for the number of sentence components to remove.
+    # NB: 'data/X.npy' will be read from the disk, which avoids redundant computations.
+    retrieval_scores = dict()
+    for i in range(0, 20, 5):
+        retrieval_scores[i] = main(compute_from_scratch=False,
+                                   num_removed_components_for_sentence_vectors=i)
+
+    print(retrieval_scores)
