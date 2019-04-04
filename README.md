@@ -68,6 +68,8 @@ When using average of word embeddings as sentence embeddings:
 -   Tf-Idf reweighting lead to better results than [Smooth Inverse Frequency](https://openreview.net/forum?id=SyK00v5xx) reweighting,
 -   GloVe word embeddings lead to better results than Word2Vec.
 
+![Influence of the removal of sentence components](https://github.com/woctezuma/steam-descriptions/wiki/img/plot.png)
+
 A table with scores for each major experiment is [available](https://github.com/woctezuma/steam-descriptions/wiki/steam_descriptions).
 For each game series, the score is the number of games from this series which are found among the top 10 most similar games (excluding the query). The higher the score, the better the retrieval.
 
