@@ -86,6 +86,8 @@ def get_retrieval_ground_truth():
 
 
 def compute_retrieval_score(query_app_ids, reference_app_id_counters, num_elements_displayed=10, verbose=True):
+    print('\nComputing retrieval score based on a setting in the same fictional universe.')
+
     retrieval_ground_truth = get_retrieval_ground_truth()
 
     retrieval_score = 0
@@ -110,7 +112,7 @@ def compute_retrieval_score(query_app_ids, reference_app_id_counters, num_elemen
                     print('[appID={}] retrieval score = {}'.format(query_app_id, current_retrieval_score))
                 break
 
-    print('\nTotal retrieval score = {}'.format(retrieval_score))
+    print('Total retrieval score = {}'.format(retrieval_score))
 
     return retrieval_score
 
