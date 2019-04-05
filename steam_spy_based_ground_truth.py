@@ -200,7 +200,8 @@ def compute_retrieval_score_based_on_sharing_meta_data(query_app_ids,
             numerator = len(meta_data_of_query.intersection(meta_data_of_reference))
             denominator = len(meta_data_of_query.union(meta_data_of_reference))
 
-            current_retrieval_score += (numerator / denominator)
+            if app_id != query_app_id:
+                current_retrieval_score += (numerator / denominator)
 
             if rank >= (num_elements_displayed - 1):
                 retrieval_score += current_retrieval_score

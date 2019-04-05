@@ -104,7 +104,8 @@ def compute_retrieval_score(query_app_ids, reference_app_id_counters, num_elemen
         for rank, app_id in enumerate(reference_app_id_counter):
 
             if app_id in current_retrieval_ground_truth:
-                current_retrieval_score += 1
+                if app_id != query_app_id:
+                    current_retrieval_score += 1
 
             if rank >= (num_elements_displayed - 1):
                 retrieval_score += current_retrieval_score
