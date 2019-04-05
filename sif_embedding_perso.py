@@ -249,14 +249,22 @@ def main():
 
     # Try different values for the number of sentence components to remove.
     # NB: 'data/X.npy' will be read from the disk, which avoids redundant computations.
-    retrieval_scores = dict()
+    scores = dict()
+    genre_scores = dict()
+    tag_scores = dict()
+
     for i in range(0, 20, 5):
-        retrieval_scores[i], _, _ = retrieve_similar_store_descriptions(compute_from_scratch=False,
-                                                                        num_removed_components_for_sentence_vectors=i)
+        print('num_removed_components_for_sentence_vectors = {}'.format(i))
+        scores[i], genre_scores[i], tag_scores[i] = retrieve_similar_store_descriptions(compute_from_scratch=False,
+                                                                                        num_removed_components_for_sentence_vectors=i)
 
-    print(retrieval_scores)
+    print(scores)
+    print(genre_scores)
+    print(tag_scores)
 
-    plot_retrieval_scores(retrieval_scores)
+    plot_retrieval_scores(scores)
+    plot_retrieval_scores(genre_scores)
+    plot_retrieval_scores(tag_scores)
 
     return
 
