@@ -21,21 +21,21 @@ from universal_sentence_encoder import perform_knn_search_with_app_ids_as_input
 from utils import load_tokens, load_game_names
 
 
-def main(compute_from_scratch=True,
-         use_unit_vectors=False,
-         alpha=1e-3,  # the parameter in the SIF weighting scheme, usually in the range [3e-5, 3e-3]
-         num_removed_components_for_sentence_vectors=0,  # num of principal components to remove in SIF weighting scheme
-         pre_process_word_vectors=False,
-         num_removed_components_for_word_vectors=0,
-         count_words_out_of_vocabulary=True,
-         use_idf_weights=True,
-         shuffle_corpus=True,
-         use_glove_with_spacy=True,
-         use_cosine_similarity=True,
-         num_neighbors=10,
-         no_below=5,  # only relevant with Word2Vec, i.e. if use_glove_with_spacy is False
-         no_above=0.5,  # only relevant with Word2Vec, i.e. if use_glove_with_spacy is False
-         only_print_banners=True):
+def retrieve_similar_store_descriptions(compute_from_scratch=True,
+                                        use_unit_vectors=False,
+                                        alpha=1e-3,  # in SIF weighting scheme, parameter in the range [3e-5, 3e-3]
+                                        num_removed_components_for_sentence_vectors=0,  # in SIF weighting scheme
+                                        pre_process_word_vectors=False,
+                                        num_removed_components_for_word_vectors=0,
+                                        count_words_out_of_vocabulary=True,
+                                        use_idf_weights=True,
+                                        shuffle_corpus=True,
+                                        use_glove_with_spacy=True,
+                                        use_cosine_similarity=True,
+                                        num_neighbors=10,
+                                        no_below=5,  # only relevant with Word2Vec
+                                        no_above=0.5,  # only relevant with Word2Vec
+                                        only_print_banners=True):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
     game_names, _ = load_game_names(include_genres=False, include_categories=False)
@@ -233,14 +233,14 @@ def main(compute_from_scratch=True,
 
 if __name__ == '__main__':
     # Initialize 'data/X.npy'
-    main(compute_from_scratch=True)
+    retrieve_similar_store_descriptions(compute_from_scratch=True)
 
     # Try different values for the number of sentence components to remove.
     # NB: 'data/X.npy' will be read from the disk, which avoids redundant computations.
     retrieval_scores = dict()
     for i in range(0, 20, 5):
-        retrieval_scores[i] = main(compute_from_scratch=False,
-                                   num_removed_components_for_sentence_vectors=i)
+        retrieval_scores[i] = retrieve_similar_store_descriptions(compute_from_scratch=False,
+                                                                  num_removed_components_for_sentence_vectors=i)
 
     print(retrieval_scores)
 
