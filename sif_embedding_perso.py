@@ -231,7 +231,7 @@ def retrieve_similar_store_descriptions(compute_from_scratch=True,
     return retrieval_score
 
 
-if __name__ == '__main__':
+def main():
     # Initialize 'data/X.npy'
     retrieve_similar_store_descriptions(compute_from_scratch=True)
 
@@ -245,3 +245,9 @@ if __name__ == '__main__':
     print(retrieval_scores)
 
     plot_retrieval_scores(retrieval_scores)
+
+    return
+
+
+if __name__ == '__main__':
+    main()
