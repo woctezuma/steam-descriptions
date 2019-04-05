@@ -1,3 +1,5 @@
+# Objective: define a ground truth consisting of clusters of games set in the same fictional universe
+
 import matplotlib.pyplot as plt
 import steamspypi
 
