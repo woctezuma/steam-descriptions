@@ -60,6 +60,9 @@ Overall, I would suggest to match store descriptions with:
 
 ![Neverwinter: similar store descriptions with GloVe](https://github.com/woctezuma/steam-descriptions/wiki/img/PYzT6ol.png)
 
+A retrieval score can be computed, thanks to a ground truth of games set in the same fictional universe.
+Alternative scores can be computed as the proportions of genres or tags shared between the query and the retrieved games.
+
 When using average of word embeddings as sentence embeddings:
 -   removing only sentence components provided a very large increase of the score (+105%),
 -   removing only word components provided a large increase of the score (+51%),
