@@ -27,7 +27,7 @@ def get_file_name_for_clustering_of_app_ids_by_tag():
 
 
 def download_genre_and_tag_keys():
-    # Genres and tags obtained downloaded from SteamSpy API
+    # Genres and tags downloaded from SteamSpy API
 
     print('Downloading lists of genres and tags.')
 
