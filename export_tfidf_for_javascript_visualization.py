@@ -112,8 +112,9 @@ def export_for_javascript_visualization(query_app_ids,
 
     new_matches_as_app_ids = []
     for element in matches_as_app_ids:
-        new_element = [int(app_id) for app_id in element]
-        new_matches_as_app_ids.append(new_element)
+        if len(element) > 1:
+            new_element = [int(app_id) for app_id in element]
+            new_matches_as_app_ids.append(new_element)
     matches_as_app_ids = new_matches_as_app_ids
 
     # Keep track of all the appIDs
