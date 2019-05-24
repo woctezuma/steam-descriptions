@@ -148,7 +148,8 @@ def export_for_javascript_visualization(query_app_ids,
         f.write('var nodes= [\n')
 
         for game_name in displayed_game_names:
-            current_str = '{"name":"' + game_name + '"},\n'
+            fixed_game_name = game_name.replace('"', '\'')
+            current_str = '{"name":"' + fixed_game_name + '"},\n'
             f.write(current_str)
 
         f.write(']\nvar links = [\n')
