@@ -42,6 +42,7 @@ Or a document embedding can be learnt with [Doc2Vec](https://radimrehurek.com/ge
 our experience, this is more useful to learn document tags, e.g. game genres, rather than to retrieve similar documents.
 
 Different baseline algorithms are suggested in [`sentence_baseline.py`](sentence_baseline.py).
+For Tf-Idf, the code is duplicated in [`export_tfidf_for_javascript_visualization.py`](export_tfidf_for_javascript_visualization.py), with the addition of an export for visualization of the matches as a graph [in the web browser](https://woctezuma.github.io/).
 
 Embeddings can also be computed with [Universal Sentence Encoder](https://tfhub.dev/google/universal-sentence-encoder/2) on [Google Colab](https://colab.research.google.com/) with [this notebook](universal_sentence_encoder.ipynb).
 Results are shown with [`universal_sentence_encoder.py`](universal_sentence_encoder.py). 
@@ -49,6 +50,7 @@ Results are shown with [`universal_sentence_encoder.py`](universal_sentence_enco
 ## Results
 
 An in-depth commentary is provided on the [Wiki](https://github.com/woctezuma/steam-descriptions/wiki/Commentary).
+Matches obtained with Tf-Idf are shown as a graph [in the web browser](https://woctezuma.github.io/).
 Overall, I would suggest to match store descriptions with:
 -   either [Term Frequency * Inverse Document Frequency (Tf-Idf)](https://github.com/woctezuma/steam-descriptions/wiki/baseline_0),
 
