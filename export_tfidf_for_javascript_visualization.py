@@ -3,6 +3,7 @@
 
 import logging
 
+import steamspypi
 from gensim.corpora import Dictionary
 from gensim.models import TfidfModel
 from gensim.similarities import MatrixSimilarity
@@ -117,6 +118,9 @@ def export_for_javascript_visualization(query_app_ids,
             new_matches_as_app_ids.append(new_element)
     matches_as_app_ids = new_matches_as_app_ids
 
+    if not (len(query_app_ids) == len(matches_as_app_ids)):
+        raise AssertionError()
+
     # Keep track of all the appIDs
 
     displayed_app_ids = set(query_app_ids)
@@ -162,9 +166,13 @@ def export_for_javascript_visualization(query_app_ids,
     return
 
 
-def main(num_items_displayed=10,
-         similarity_threshold=0.2):
-    query_app_ids = load_benchmarked_app_ids(append_hard_coded_app_ids=True)
+def apply_workflow(query_app_ids=None,
+                   num_items_displayed=10,
+                   similarity_threshold=0.2):
+    if query_app_ids is None:
+        query_app_ids = load_benchmarked_app_ids(append_hard_coded_app_ids=True)
+
+    query_app_ids = list(int(app_id) for app_id in query_app_ids)
 
     game_names, _ = load_game_names(include_genres=False, include_categories=False)
     query_app_ids = list(set(query_app_ids).intersection(int(app_id) for app_id in game_names.keys()))
@@ -192,6 +200,22 @@ def main(num_items_displayed=10,
     print_ranking(query_app_ids,
                   matches_as_app_ids,
                   only_print_banners=True)
+
+    return
+
+
+def main(num_query_app_ids=100,
+         num_items_displayed=10,
+         similarity_threshold=0.2):
+    # Data is already sorted by decreasing number of owners.
+    data = steamspypi.load()
+    all_app_ids_sorted_by_num_owners = list(int(app_id) for app_id in data.keys())
+
+    query_app_ids = all_app_ids_sorted_by_num_owners[:num_query_app_ids]
+
+    apply_workflow(query_app_ids,
+                   num_items_displayed=num_items_displayed,
+                   similarity_threshold=similarity_threshold)
 
     return
 
