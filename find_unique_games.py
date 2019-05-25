@@ -24,6 +24,9 @@ def populate_database(query_app_ids,
     except FileNotFoundError:
         sim_dict = dict()
 
+    query_app_ids = set(query_app_ids).difference([int(app_id) for app_id in sim_dict.keys()])
+    query_app_ids = sorted(list(query_app_ids), key=int)
+
     for query_count, query_app_id in enumerate(query_app_ids):
 
         if str(query_app_id) in sim_dict.keys():
