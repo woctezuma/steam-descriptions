@@ -83,6 +83,24 @@ def load_sim_dict():
     return sim_dict
 
 
+def print_unique_games(sim_dict,
+                       similarity_threshold,
+                       game_names,
+                       verbose=True):
+    unique_app_ids = []
+
+    for app_id in sorted(sim_dict.keys(), key=lambda x: sim_dict[x]['similarity']):
+        similarity_value = sim_dict[app_id]['similarity']
+        if similarity_value <= similarity_threshold:
+            unique_app_ids.append(app_id)
+            if verbose:
+                print('similarity = {:.2f} ; appID = {} ({})'.format(similarity_value,
+                                                                     app_id,
+                                                                     get_app_name(app_id, game_names)))
+
+    return unique_app_ids
+
+
 def main(num_items_displayed=2,
          similarity_threshold=0.2,
          update_sim_dict=False):
@@ -107,7 +125,7 @@ def main(num_items_displayed=2,
     else:
         sim_dict = load_sim_dict()
 
-    # TODO use similarity_threshold to display a small part of the results
+    unique_app_ids = print_unique_games(sim_dict, similarity_threshold, game_names)
 
     return
 
