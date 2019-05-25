@@ -39,10 +39,18 @@ def populate_database(query_app_ids,
 
         query = steam_tokens[str(query_app_id)]
 
+        # Typically for empty descriptions, e.g. with appID: 3300 (Bejeweled 2 Deluxe)
         if len(query) == 0:
+            print('No description input for appID = {}'.format(query_app_id))
             continue
 
         vec_bow = dct.doc2bow(query)
+
+        # Typically for descriptions in Chinese, e.g. with appID: 859200 (破东荒 - Chaos Of East)
+        if len(vec_bow) == 0:
+            print('No Bag-of-Words input for appID = {}'.format(query_app_id))
+            continue
+
         sims = index[model[vec_bow]]
 
         similarity_scores_as_tuples = [(int(app_ids[i]), sim) for (i, sim) in sims]
