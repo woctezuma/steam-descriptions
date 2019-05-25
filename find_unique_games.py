@@ -1,7 +1,7 @@
 import json
 import logging
 
-from benchmark_utils import get_app_name
+from benchmark_utils import get_app_name, get_banner_url, get_store_url
 from export_tfidf_for_javascript_visualization import load_input, train_tfidf_model
 
 
@@ -86,17 +86,30 @@ def load_sim_dict():
 def print_unique_games(sim_dict,
                        similarity_threshold,
                        game_names,
-                       verbose=True):
+                       only_print_banners=False):
+    # Markdown
+    # Reference: https://stackoverflow.com/a/14747656
+    image_link_str = '[<img alt="{}" src="{}" width="{}">]({})'
+    image_width = 150
+
+    sorted_app_ids = sorted(sim_dict.keys(), key=lambda x: sim_dict[x]['similarity'])
+
     unique_app_ids = []
 
-    for app_id in sorted(sim_dict.keys(), key=lambda x: sim_dict[x]['similarity']):
+    for counter, app_id in enumerate(sorted_app_ids):
         similarity_value = sim_dict[app_id]['similarity']
         if similarity_value <= similarity_threshold:
             unique_app_ids.append(app_id)
-            if verbose:
-                print('similarity = {:.2f} ; appID = {} ({})'.format(similarity_value,
-                                                                     app_id,
-                                                                     get_app_name(app_id, game_names)))
+
+            app_name = get_app_name(app_id, game_names=game_names)
+            if only_print_banners:
+                # Markdown
+                print(image_link_str.format(app_name, get_banner_url(app_id), image_width, get_store_url(app_id)))
+            else:
+                print('{}) similarity = {:.2f} ; appID = {} ({})'.format(counter + 1,
+                                                                         similarity_value,
+                                                                         app_id,
+                                                                         app_name))
 
     return unique_app_ids
 
