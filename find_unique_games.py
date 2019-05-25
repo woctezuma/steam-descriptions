@@ -54,7 +54,7 @@ def populate_database(query_app_ids,
         sim_dict[query_app_id]['app_id'] = second_best_matched_app_id
         sim_dict[query_app_id]['similarity'] = second_best_similarity_score
 
-        save_to_disk = bool((query_count + 1) % 100 == 0)
+        save_to_disk = bool((query_count + 1) % 300 == 0)
 
         if save_to_disk:
             with open(get_unique_games_file_name(), 'w') as f:
