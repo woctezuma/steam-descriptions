@@ -26,7 +26,7 @@ def populate_database(query_app_ids,
 
     for query_count, query_app_id in enumerate(query_app_ids):
 
-        if query_app_id in sim_dict.keys():
+        if str(query_app_id) in sim_dict.keys():
             continue
 
         print('[{}/{}] Query appID: {} ({})'.format(query_count + 1,
@@ -50,9 +50,9 @@ def populate_database(query_app_ids,
 
         second_best_similarity_score = second_best_similarity_score_as_tuple[1]
 
-        sim_dict[int(query_app_id)] = dict()
-        sim_dict[int(query_app_id)]['app_id'] = second_best_matched_app_id
-        sim_dict[int(query_app_id)]['similarity'] = second_best_similarity_score
+        sim_dict[query_app_id] = dict()
+        sim_dict[query_app_id]['app_id'] = second_best_matched_app_id
+        sim_dict[query_app_id]['similarity'] = second_best_similarity_score
 
         save_to_disk = bool((query_count + 1) % 100 == 0)
 
