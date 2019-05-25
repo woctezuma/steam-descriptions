@@ -116,7 +116,8 @@ def print_unique_games(sim_dict,
 
 def main(num_items_displayed=2,
          similarity_threshold=0.2,
-         update_sim_dict=False):
+         update_sim_dict=False,
+         only_print_banners=False):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
     game_names, steam_tokens, app_ids = load_input()
@@ -138,7 +139,10 @@ def main(num_items_displayed=2,
     else:
         sim_dict = load_sim_dict()
 
-    unique_app_ids = print_unique_games(sim_dict, similarity_threshold, game_names)
+    unique_app_ids = print_unique_games(sim_dict,
+                                        similarity_threshold,
+                                        game_names,
+                                        only_print_banners)
 
     return
 
