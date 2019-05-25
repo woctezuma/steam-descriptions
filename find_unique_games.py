@@ -19,8 +19,7 @@ def populate_database(query_app_ids,
                       model,
                       index):
     try:
-        with open(get_unique_games_file_name(), 'r') as f:
-            sim_dict = json.load(f)
+        sim_dict = load_sim_dict()
     except FileNotFoundError:
         sim_dict = dict()
 
@@ -73,6 +72,13 @@ def populate_database(query_app_ids,
 
     with open(get_unique_games_file_name(), 'w') as f:
         json.dump(sim_dict, f)
+
+    return sim_dict
+
+
+def load_sim_dict():
+    with open(get_unique_games_file_name(), 'r') as f:
+        sim_dict = json.load(f)
 
     return sim_dict
 
