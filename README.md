@@ -49,6 +49,8 @@ Results are shown with [`universal_sentence_encoder.py`](universal_sentence_enco
 
 ## Results
 
+### Similar games
+
 An in-depth commentary is provided on the [Wiki](https://github.com/woctezuma/steam-descriptions/wiki/Commentary).
 Matches obtained with Tf-Idf are shown as a graph [in the web browser](https://woctezuma.github.io/).
 Overall, I would suggest to match store descriptions with:
@@ -79,6 +81,15 @@ A table with scores for each major experiment is [available](https://github.com/
 For each game series, the score is the number of games from this series which are found among the top 10 most similar games (excluding the query). The higher the score, the better the retrieval.
 
 Results can be accessed from the [Wiki homepage](https://github.com/woctezuma/steam-descriptions/wiki/).
+
+### Unique games
+
+It is possible to highlight games with *unique* store descriptions, by applying a threshold to similarity values output by the algorithm.
+This is done in [`find_unique_games.py`](find_unique_games.py):
+-   the Tf-Idf model is used to compute similarity scores between store descriptions,
+-   a game is *unique* if the similarity score between a query game and its most similar game (other than itself) is lower than or equal to an arbitrary threshold of 14.9%.
+
+Results are shown [here](https://github.com/woctezuma/steam-descriptions/wiki/Unique_Games).
 
 ## References
 
