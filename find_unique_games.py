@@ -90,13 +90,13 @@ def main(num_items_displayed=2,
 
     game_names, steam_tokens, app_ids = load_input()
 
-    query_app_ids = list(set(app_ids).intersection(int(app_id) for app_id in game_names.keys()))
-    query_app_ids = sorted(query_app_ids, key=int)
-
-    dct, model, index = train_tfidf_model(steam_tokens,
-                                          num_best=num_items_displayed)
-
     if update_sim_dict:
+        query_app_ids = list(set(app_ids).intersection(int(app_id) for app_id in game_names.keys()))
+        query_app_ids = sorted(query_app_ids, key=int)
+
+        dct, model, index = train_tfidf_model(steam_tokens,
+                                              num_best=num_items_displayed)
+
         sim_dict = populate_database(query_app_ids,
                                      game_names,
                                      steam_tokens,
