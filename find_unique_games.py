@@ -84,7 +84,8 @@ def load_sim_dict():
 
 
 def main(num_items_displayed=2,
-         similarity_threshold=0.2):
+         similarity_threshold=0.2,
+         update_sim_dict=False):
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
     game_names, steam_tokens, app_ids = load_input()
@@ -95,13 +96,16 @@ def main(num_items_displayed=2,
     dct, model, index = train_tfidf_model(steam_tokens,
                                           num_best=num_items_displayed)
 
-    sim_dict = populate_database(query_app_ids,
-                                 game_names,
-                                 steam_tokens,
-                                 app_ids,
-                                 dct,
-                                 model,
-                                 index)
+    if update_sim_dict:
+        sim_dict = populate_database(query_app_ids,
+                                     game_names,
+                                     steam_tokens,
+                                     app_ids,
+                                     dct,
+                                     model,
+                                     index)
+    else:
+        sim_dict = load_sim_dict()
 
     # TODO use similarity_threshold to display a small part of the results
 
