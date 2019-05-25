@@ -60,6 +60,9 @@ def populate_database(query_app_ids,
             with open(get_unique_games_file_name(), 'w') as f:
                 json.dump(sim_dict, f)
 
+    with open(get_unique_games_file_name(), 'w') as f:
+        json.dump(sim_dict, f)
+
     return sim_dict
 
 
