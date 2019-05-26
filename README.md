@@ -87,7 +87,7 @@ Results can be accessed from the [Wiki homepage](https://github.com/woctezuma/st
 It is possible to highlight games with *unique* store descriptions, by applying a threshold to similarity values output by the algorithm.
 This is done in [`find_unique_games.py`](find_unique_games.py):
 -   the Tf-Idf model is used to compute similarity scores between store descriptions,
--   a game is *unique* if the similarity score between a query game and its most similar game (other than itself) is lower than or equal to an arbitrary threshold of 14.9%.
+-   a game is *unique* if the similarity score between a query game and its most similar game (other than itself) is lower than or equal to an arbitrary threshold.
 
 Results are shown [here](https://github.com/woctezuma/steam-descriptions/wiki/Unique_Games).
 
