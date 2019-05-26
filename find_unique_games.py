@@ -131,7 +131,8 @@ def print_unique_games(sim_dict,
 
 
 def main(num_items_displayed=2,
-         similarity_threshold=0.149,
+         num_output=250,  # Allows to automatically define a value for 'similarity_threshold' so that N games are output
+         similarity_threshold=None,
          update_sim_dict=False,
          only_print_banners=False,
          use_markdown=True):
@@ -155,6 +156,11 @@ def main(num_items_displayed=2,
                                      index)
     else:
         sim_dict = load_sim_dict()
+
+    if similarity_threshold is None:
+        sorted_similarity_values = sorted(match['similarity'] for match in sim_dict.values())
+        similarity_threshold = sorted_similarity_values[num_output]
+        print('Similarity threshold is automatically set to {:.2f}'.format(similarity_threshold))
 
     unique_app_ids = print_unique_games(sim_dict,
                                         similarity_threshold,
