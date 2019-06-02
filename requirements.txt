@@ -1,4 +1,4 @@
-cython==0.29.9
+cython==0.29.10
 gensim==3.7.3
 pyemd==0.5.1
 numpy==1.16.4
