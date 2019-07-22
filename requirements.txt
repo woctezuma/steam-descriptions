@@ -1,5 +1,5 @@
 cython==0.29.11
-gensim==3.7.3
+gensim==3.8.0
 pyemd==0.5.1
 numpy==1.16.4
 sklearn==0.0
