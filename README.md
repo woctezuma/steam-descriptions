@@ -93,6 +93,7 @@ Results are shown [here](https://github.com/woctezuma/steam-descriptions/wiki/Un
 
 ## References
 
+-   [Microsoft's tutorial](https://github.com/microsoft/nlp/tree/master/examples/sentence_similarity) about sentence similarity,
 -   [My answer on StackOverlow](https://stackoverflow.com/a/54330582/), about sentence embeddings
 -   [Tutorial on the official website of 'gensim' module](https://radimrehurek.com/gensim/models/word2vec.html)
 -   [Tutorial on a blog](http://kavita-ganesan.com/gensim-word2vec-tutorial-starter-code/)
