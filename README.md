@@ -45,6 +45,7 @@ Different baseline algorithms are suggested in [`sentence_baseline.py`](sentence
 For Tf-Idf, the code is duplicated in [`export_tfidf_for_javascript_visualization.py`](export_tfidf_for_javascript_visualization.py), with the addition of an export for visualization of the matches as a graph [in the web browser](https://woctezuma.github.io/).
 
 Embeddings can also be computed with [Universal Sentence Encoder](https://tfhub.dev/google/universal-sentence-encoder/2) on [Google Colab](https://colab.research.google.com/) with [this notebook][universal_sentence_encoder].
+[![Open In Colab][colab-badge]][universal_sentence_encoder]
 Results are shown with [`universal_sentence_encoder.py`](universal_sentence_encoder.py). 
 
 ## Results
@@ -121,3 +122,5 @@ Results are shown [here](https://github.com/woctezuma/steam-descriptions/wiki/Un
 [codacy-image]: <https://api.codacy.com/project/badge/Grade/710292a19eff45e08a53e8b0028e02d4>
 
 [universal_sentence_encoder]: <https://colab.research.google.com/github/woctezuma/steam-descriptions/blob/master/universal_sentence_encoder.ipynb>
+
+[colab-badge]: <https://colab.research.google.com/assets/colab-badge.svg>
