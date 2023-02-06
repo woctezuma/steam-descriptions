@@ -4,6 +4,6 @@ pyemd==0.5.1
 numpy==1.22.0
 scikit-learn
 spacy==2.1.8
-steamspypi==1.0.0
+steamspypi==1.1.1
 matplotlib==3.6.3
 steamtags==0.1.2
