@@ -3,7 +3,7 @@
 import json
 
 import spacy
-from gensim.parsing.preprocessing import strip_tags, remove_stopwords
+from gensim.parsing.preprocessing import remove_stopwords, strip_tags
 from gensim.utils import simple_preprocess
 
 
@@ -36,7 +36,7 @@ def load_raw_data(verbose=False):
     if verbose:
         print('Loading raw data')
 
-    with open(get_raw_data_file_name(), 'r') as f:
+    with open(get_raw_data_file_name()) as f:
         steam_sentences = json.load(f)
 
     return steam_sentences
@@ -45,8 +45,8 @@ def load_raw_data(verbose=False):
 def load_game_names(include_genres=True, include_categories=True):
     steam_sentences = load_raw_data()
 
-    game_names = dict()
-    game_tags = dict()
+    game_names = {}
+    game_tags = {}
 
     for app_id in steam_sentences:
         game_names[app_id] = steam_sentences[app_id]['name']
@@ -71,7 +71,7 @@ def load_game_names(include_genres=True, include_categories=True):
 def load_tokens():
     print('Loading tokens')
 
-    with open(get_token_file_name(), 'r') as f:
+    with open(get_token_file_name()) as f:
         steam_tokens = json.load(f)
 
     return steam_tokens

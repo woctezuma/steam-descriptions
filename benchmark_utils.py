@@ -6,12 +6,12 @@ from utils import load_game_names
 def get_top_100_app_ids():
     # Reference: https://github.com/woctezuma/download-steam-banners/blob/master/retrieve_similar_features.py
 
-    data_request = dict()
+    data_request = {}
     data_request['request'] = 'top100in2weeks'
 
     data = steamspypi.download(data_request)
 
-    top_100_app_ids = list(int(app_id) for app_id in data.keys())
+    top_100_app_ids = [int(app_id) for app_id in data]
 
     return top_100_app_ids
 

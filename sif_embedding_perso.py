@@ -13,14 +13,16 @@ import spacy
 from gensim.corpora import Dictionary
 from gensim.models import Word2Vec
 
-from SIF_embedding import remove_pc
 from benchmark_utils import load_benchmarked_app_ids, print_ranking
 from hard_coded_ground_truth import compute_retrieval_score, plot_retrieval_scores
 from sentence_models import filter_out_words_not_in_vocabulary
-from steam_spy_based_ground_truth import compute_retrieval_score_based_on_sharing_genres
-from steam_spy_based_ground_truth import compute_retrieval_score_based_on_sharing_tags
+from SIF_embedding import remove_pc
+from steam_spy_based_ground_truth import (
+    compute_retrieval_score_based_on_sharing_genres,
+    compute_retrieval_score_based_on_sharing_tags,
+)
 from universal_sentence_encoder import perform_knn_search_with_app_ids_as_input
-from utils import load_tokens, load_game_names
+from utils import load_game_names, load_tokens
 
 
 def retrieve_similar_store_descriptions(
@@ -60,10 +62,10 @@ def retrieve_similar_store_descriptions(
             # Use self-trained Word2Vec vectors
 
             dct = Dictionary(documents)
-            print('Dictionary size (before trimming): {}'.format(len(dct)))
+            print(f'Dictionary size (before trimming): {len(dct)}')
 
             dct.filter_extremes(no_below=no_below, no_above=no_above)
-            print('Dictionary size (after trimming): {}'.format(len(dct)))
+            print(f'Dictionary size (after trimming): {len(dct)}')
 
             model = Word2Vec(documents, workers=multiprocessing.cpu_count())
 
@@ -112,10 +114,7 @@ def retrieve_similar_store_descriptions(
                 replace=True,
             )  # TODO IMPORTANT choose whether to normalize vectors
 
-        if not use_glove_with_spacy:
-            index2word_set = set(wv.index2word)
-        else:
-            index2word_set = None
+        index2word_set = set(wv.index2word) if not use_glove_with_spacy else None
 
         num_games = len(steam_tokens)
 
@@ -167,7 +166,7 @@ def retrieve_similar_store_descriptions(
             )
 
         # Word frequency. Caveat: over the whole corpus!
-        word_frequency = dict()
+        word_frequency = {}
         for word in word_counter:
             word_frequency[word] = word_counter[word] / total_counter
 
@@ -250,7 +249,7 @@ def retrieve_similar_store_descriptions(
     if num_removed_components_for_sentence_vectors > 0:
         X = remove_pc(X, npc=num_removed_components_for_sentence_vectors)
 
-    app_ids = list(int(app_id) for app_id in steam_tokens.keys())
+    app_ids = [int(app_id) for app_id in steam_tokens]
 
     query_app_ids = load_benchmarked_app_ids(append_hard_coded_app_ids=True)
 
@@ -299,12 +298,12 @@ def main():
 
     # Try different values for the number of sentence components to remove.
     # NB: 'data/X.npy' will be read from the disk, which avoids redundant computations.
-    scores = dict()
-    genre_scores = dict()
-    tag_scores = dict()
+    scores = {}
+    genre_scores = {}
+    tag_scores = {}
 
     for i in range(0, 20, 5):
-        print('num_removed_components_for_sentence_vectors = {}'.format(i))
+        print(f'num_removed_components_for_sentence_vectors = {i}')
         scores[i], genre_scores[i], tag_scores[i] = retrieve_similar_store_descriptions(
             compute_from_scratch=False,
             num_removed_components_for_sentence_vectors=i,

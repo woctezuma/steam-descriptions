@@ -10,9 +10,12 @@ from gensim.models import doc2vec
 
 from benchmark_utils import load_benchmarked_app_ids, print_ranking
 from sentence_models import print_most_similar_sentences
-from universal_sentence_encoder import perform_knn_search_with_vectors_as_input
-from universal_sentence_encoder import prepare_knn_search, transform_matches_to_app_ids
-from utils import load_tokens, load_game_names, get_doc_model_file_name
+from universal_sentence_encoder import (
+    perform_knn_search_with_vectors_as_input,
+    prepare_knn_search,
+    transform_matches_to_app_ids,
+)
+from utils import get_doc_model_file_name, load_game_names, load_tokens
 from word_model import compute_similarity_using_word2vec_model
 
 
@@ -31,7 +34,7 @@ def read_corpus(steam_tokens, game_tags=None, include_app_ids=True):
             # Reference: https://medium.com/scaleabout/a-gentle-introduction-to-doc2vec-db3e8c0cce5e
             doc_tag += game_tags[app_id]
         except KeyError:
-            print('AppID = {} cannot be found in tag dictionary.'.format(app_id))
+            print(f'AppID = {app_id} cannot be found in tag dictionary.')
         except TypeError:
             pass
 
@@ -47,7 +50,7 @@ def reformat_similarity_scores_for_doc2vec(
 
     dummy_app_ids = []
 
-    similarity_scores = dict()
+    similarity_scores = {}
     for app_id, similarity_value in similarity_scores_as_tuples:
         if app_id.startswith(get_tag_prefix()):
             app_id = app_id[len(get_tag_prefix()) :]
@@ -58,7 +61,7 @@ def reformat_similarity_scores_for_doc2vec(
             dummy_app_ids.append(app_id)
 
     if len(dummy_app_ids) > 0:
-        print('Dummy appIDs: {}'.format(dummy_app_ids))
+        print(f'Dummy appIDs: {dummy_app_ids}')
 
     return similarity_scores
 
@@ -183,8 +186,8 @@ def apply_pipeline(
     documents = list(read_corpus(steam_tokens, game_tags, include_app_ids))
 
     if shuffle_corpus:
-        # « Only if the training data has some existing clumping – like all the examples with certain words/topics are
-        # stuck together at the top or bottom of the ordering – is native ordering likely to cause training problems.
+        # « Only if the training data has some existing clumping - like all the examples with certain words/topics are
+        # stuck together at the top or bottom of the ordering - is native ordering likely to cause training problems.
         # And in that case, a single shuffle, before any training, should be enough to remove the clumping. »
         # Reference: https://stackoverflow.com/a/48080869
         random.shuffle(documents)
@@ -238,7 +241,7 @@ def apply_pipeline(
         ]
 
         for query_app_id in query_app_ids:
-            print('Query appID: {} ({})'.format(query_app_id, game_names[query_app_id]))
+            print(f'Query appID: {query_app_id} ({game_names[query_app_id]})')
             compute_similarity_using_doc2vec_model(
                 query_app_id,
                 steam_tokens,
@@ -252,7 +255,7 @@ def apply_pipeline(
             compute_similarity_using_word2vec_model(query_word, steam_tokens, model)
 
         entity = get_doc_model_entity(model)
-        tag_entity = set(tag for tag in entity if 'appID_' not in tag)
+        tag_entity = {tag for tag in entity if 'appID_' not in tag}
 
         print(tag_entity)
 
@@ -278,7 +281,7 @@ def apply_pipeline(
 
         num_items_displayed = 3
         for query_tag in tag_entity:
-            print('\nTag: {}'.format(query_tag))
+            print(f'\nTag: {query_tag}')
             similarity_scores_as_tuples = model.docvecs.most_similar(
                 positive=query_tag,
                 topn=num_items_displayed,

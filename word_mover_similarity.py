@@ -10,7 +10,7 @@ from utils import get_word_model_file_name, load_tokens
 
 
 def reformat_similarity_scores_for_wmd(similarity_scores_as_tuples, candidates):
-    similarity_scores = dict()
+    similarity_scores = {}
     for app_id, my_tuple in zip(
         candidates,
         sorted(similarity_scores_as_tuples, key=operator.itemgetter(0)),
@@ -37,7 +37,7 @@ def compute_similarity_with_candidate_sentences_using_wmd(
     query = steam_tokens[query_app_id]
 
     if constrain_search:
-        documents = list(steam_tokens[i] for i in candidates)
+        documents = [steam_tokens[i] for i in candidates]
     else:
         # Caveat: the Word Mover algorithm is painfully slow! Please consider constraining the search to few candidates!
         documents = list(steam_tokens.values())

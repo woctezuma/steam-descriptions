@@ -5,13 +5,13 @@ import steamspypi
 
 
 def get_app_ids_which_app_name_contains(name_str='Half-Life'):
-    data_request = dict()
+    data_request = {}
     data_request['request'] = 'all'
 
     data = steamspypi.download(data_request)
 
     app_ids = sorted(
-        [data[d]['appid'] for d in data.keys() if name_str in data[d]['name']],
+        [data[d]['appid'] for d in data if name_str in data[d]['name']],
     )
 
     return app_ids
@@ -256,7 +256,7 @@ def get_retrieval_ground_truth():
 
     # Create a dictionary
 
-    retrieval_ground_truth = dict()
+    retrieval_ground_truth = {}
     for cluster in retrieval_ground_truth_as_list:
         for element in cluster:
             retrieval_ground_truth[element] = set(cluster) - {element}
@@ -288,9 +288,8 @@ def compute_retrieval_score(
 
         current_retrieval_score = 0
         for rank, app_id in enumerate(reference_app_id_counter):
-            if app_id in current_retrieval_ground_truth:
-                if app_id != query_app_id:
-                    current_retrieval_score += 1
+            if app_id in current_retrieval_ground_truth and app_id != query_app_id:
+                current_retrieval_score += 1
 
             if rank >= (num_elements_displayed - 1):
                 retrieval_score += current_retrieval_score
@@ -303,7 +302,7 @@ def compute_retrieval_score(
                     )
                 break
 
-    print('Total retrieval score = {}'.format(retrieval_score))
+    print(f'Total retrieval score = {retrieval_score}')
 
     return retrieval_score
 
@@ -313,7 +312,7 @@ def plot_retrieval_scores(d):
 
     d_max = max(d.values())
 
-    d_arg_max = [i for i in d.keys() if d[i] == d_max]
+    d_arg_max = [i for i in d if d[i] == d_max]
 
     plt.plot(list(d.keys()), list(d.values()))
     plt.scatter(d_arg_max, [d[i] for i in d_arg_max], color='red')

@@ -8,10 +8,10 @@ from gensim.corpora import Dictionary
 from gensim.models import TfidfModel
 from gensim.similarities import MatrixSimilarity
 
-from benchmark_utils import load_benchmarked_app_ids, print_ranking, get_app_name
+from benchmark_utils import get_app_name, load_benchmarked_app_ids, print_ranking
 from doc2vec_model import reformat_similarity_scores_for_doc2vec
 from sentence_models import print_most_similar_sentences
-from utils import load_tokens, load_game_names
+from utils import load_game_names, load_tokens
 
 
 def load_input():
@@ -19,7 +19,7 @@ def load_input():
 
     steam_tokens = load_tokens()
 
-    app_ids = list(int(app_id) for app_id in steam_tokens.keys())
+    app_ids = [int(app_id) for app_id in steam_tokens]
 
     return game_names, steam_tokens, app_ids
 
@@ -74,7 +74,7 @@ def match_queries(
         try:
             query = steam_tokens[str(query_app_id)]
         except KeyError:
-            print('Skipping query appID: {}'.format(query_app_id))
+            print(f'Skipping query appID: {query_app_id}')
             similar_app_ids = []
             matches_as_app_ids.append(similar_app_ids)
             continue
@@ -147,9 +147,7 @@ def export_for_javascript_visualization(
     # Remove appIDs absent from our database
 
     displayed_app_ids = list(
-        set(displayed_app_ids).intersection(
-            int(app_id) for app_id in game_names.keys()
-        ),
+        set(displayed_app_ids).intersection(int(app_id) for app_id in game_names),
     )
 
     # Keep track of all the game names
@@ -158,7 +156,7 @@ def export_for_javascript_visualization(
 
     # Use consecutive numbers to index appIDs
 
-    nodetoidx = dict()
+    nodetoidx = {}
     for i, app_id in enumerate(displayed_app_ids):
         nodetoidx[app_id] = i
 
@@ -201,11 +199,11 @@ def apply_workflow(
     if query_app_ids is None:
         query_app_ids = load_benchmarked_app_ids(append_hard_coded_app_ids=True)
 
-    query_app_ids = list(int(app_id) for app_id in query_app_ids)
+    query_app_ids = [int(app_id) for app_id in query_app_ids]
 
     game_names, _ = load_game_names(include_genres=False, include_categories=False)
     query_app_ids = list(
-        set(query_app_ids).intersection(int(app_id) for app_id in game_names.keys()),
+        set(query_app_ids).intersection(int(app_id) for app_id in game_names),
     )
 
     logging.basicConfig(
@@ -239,7 +237,7 @@ def apply_workflow(
 def main(num_query_app_ids=100, num_items_displayed=10, similarity_threshold=0.2):
     # Data is already sorted by decreasing number of owners.
     data = steamspypi.load()
-    all_app_ids_sorted_by_num_owners = list(int(app_id) for app_id in data.keys())
+    all_app_ids_sorted_by_num_owners = [int(app_id) for app_id in data]
 
     query_app_ids = all_app_ids_sorted_by_num_owners[:num_query_app_ids]
 

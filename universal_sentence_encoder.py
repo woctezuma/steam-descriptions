@@ -27,7 +27,7 @@ def get_embedding_app_id_file_name():
 
 
 def load_embedding_app_ids():
-    with open(get_embedding_app_id_file_name(), 'r', encoding='utf-8') as f:
+    with open(get_embedding_app_id_file_name(), encoding='utf-8') as f:
         app_id_list_as_str = f.readlines()[0].strip()
 
     app_id_list = [
@@ -80,7 +80,7 @@ def perform_knn_search_with_vectors_as_input(query_des, knn, num_neighbors=10):
     else:
         _, matches = knn.kneighbors(query_des, n_neighbors=num_neighbors)
 
-    print('Elapsed time: {:.2f} s'.format(time() - start))
+    print(f'Elapsed time: {time() - start:.2f} s')
 
     return matches
 
@@ -101,14 +101,14 @@ def transform_matches_to_app_ids(matches, app_ids=None):
 def print_formatted_knn_search_results(formatted_results, query_app_id=None):
     for counter, ranking in enumerate(formatted_results):
         if query_app_id is not None:
-            print('\nQuery: {}'.format(query_app_id[counter]))
+            print(f'\nQuery: {query_app_id[counter]}')
         else:
             print('\nQuery: not available')
 
         for rank, app_info in enumerate(ranking):
             app_id = app_info[0]
             app_name = app_info[1]
-            print('{:2}) {} ({})'.format(rank + 1, app_name, app_id))
+            print(f'{rank + 1:2}) {app_name} ({app_id})')
 
     return
 

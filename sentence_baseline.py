@@ -5,29 +5,29 @@ import logging
 import spacy
 from gensim.corpora import Dictionary
 from gensim.models import (
-    TfidfModel,
-    LsiModel,
-    RpModel,
-    LdaModel,
     HdpModel,
     KeyedVectors,
+    LdaModel,
+    LsiModel,
+    RpModel,
+    TfidfModel,
     Word2Vec,
+    WordEmbeddingSimilarityIndex,
 )
-from gensim.models import WordEmbeddingSimilarityIndex
 from gensim.similarities import (
     MatrixSimilarity,
-    SparseTermSimilarityMatrix,
     SoftCosineSimilarity,
+    SparseTermSimilarityMatrix,
 )
 from spacy.tokens import Doc
 
-from benchmark_utils import load_benchmarked_app_ids, print_ranking, get_app_name
+from benchmark_utils import get_app_name, load_benchmarked_app_ids, print_ranking
 from doc2vec_model import reformat_similarity_scores_for_doc2vec
 from sentence_models import (
-    print_most_similar_sentences,
     filter_out_words_not_in_vocabulary,
+    print_most_similar_sentences,
 )
-from utils import load_tokens, load_game_names
+from utils import load_game_names, load_tokens
 
 
 def main(
@@ -171,7 +171,7 @@ def main(
 
     query_app_ids = load_benchmarked_app_ids(append_hard_coded_app_ids=True)
 
-    app_ids = list(int(app_id) for app_id in steam_tokens.keys())
+    app_ids = [int(app_id) for app_id in steam_tokens]
 
     matches_as_app_ids = []
 
@@ -187,10 +187,7 @@ def main(
 
         query = steam_tokens[str(query_app_id)]
 
-        if use_spacy:
-            spacy_query = Doc(nlp.vocab, query)
-        else:
-            spacy_query = None
+        spacy_query = Doc(nlp.vocab, query) if use_spacy else None
 
         if chosen_model_name != 'word2vec':
             vec_bow = dct.doc2bow(query)

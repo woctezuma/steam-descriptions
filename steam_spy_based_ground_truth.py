@@ -11,29 +11,29 @@ def compute_retrieval_score_based_on_sharing_meta_data(
     num_elements_displayed=10,
     verbose=True,
 ):
-    print('\nComputing retrieval score based on sharing {}.'.format(meta_data_str))
+    print(f'\nComputing retrieval score based on sharing {meta_data_str}.')
 
     retrieval_score = 0
 
     for query_counter, query_app_id in enumerate(query_app_ids):
         reference_app_id_counter = reference_app_id_counters[query_counter]
 
-        meta_data_of_query = set(
+        meta_data_of_query = {
             meta_data
-            for meta_data in retrieval_ground_truth.keys()
+            for meta_data in retrieval_ground_truth
             if int(query_app_id) in retrieval_ground_truth[meta_data]
-        )
+        }
 
         if len(meta_data_of_query) == 0:
             continue
 
         current_retrieval_score = 0
         for rank, app_id in enumerate(reference_app_id_counter):
-            meta_data_of_reference = set(
+            meta_data_of_reference = {
                 meta_data
-                for meta_data in retrieval_ground_truth.keys()
+                for meta_data in retrieval_ground_truth
                 if int(app_id) in retrieval_ground_truth[meta_data]
-            )
+            }
 
             numerator = len(meta_data_of_query.intersection(meta_data_of_reference))
             denominator = len(meta_data_of_query.union(meta_data_of_reference))

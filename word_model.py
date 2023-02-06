@@ -30,7 +30,7 @@ def train_word_model_on_steam_tokens(model=None, steam_tokens=None, num_epochs=1
 def test_word(model, query_word='anime'):
     similar_words = model.wv.most_similar(positive=query_word)
 
-    print('\nThe most similar words to the word "{}" are:'.format(query_word))
+    print(f'\nThe most similar words to the word "{query_word}" are:')
     pprint(similar_words)
 
     return similar_words
@@ -72,7 +72,7 @@ def compute_similarity_using_word2vec_model(
         similar_words = test_word(model, query_word)
     else:
         print(
-            'The word {} is not part of the word model vocabulary.'.format(query_word),
+            f'The word {query_word} is not part of the word model vocabulary.',
         )
         similar_words = None
 

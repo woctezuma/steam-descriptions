@@ -23,15 +23,15 @@ def populate_database(
     try:
         sim_dict = load_sim_dict()
     except FileNotFoundError:
-        sim_dict = dict()
+        sim_dict = {}
 
     query_app_ids = set(query_app_ids).difference(
-        [int(app_id) for app_id in sim_dict.keys()],
+        [int(app_id) for app_id in sim_dict],
     )
     query_app_ids = sorted(list(query_app_ids), key=int)
 
     for query_count, query_app_id in enumerate(query_app_ids):
-        if str(query_app_id) in sim_dict.keys():
+        if str(query_app_id) in sim_dict:
             continue
 
         print(
@@ -47,14 +47,14 @@ def populate_database(
 
         # Typically for empty descriptions, e.g. with appID: 3300 (Bejeweled 2 Deluxe)
         if len(query) == 0:
-            print('No description input for appID = {}'.format(query_app_id))
+            print(f'No description input for appID = {query_app_id}')
             continue
 
         vec_bow = dct.doc2bow(query)
 
         # Typically for descriptions in Chinese, e.g. with appID: 859200 (破东荒 - Chaos Of East)
         if len(vec_bow) == 0:
-            print('No Bag-of-Words input for appID = {}'.format(query_app_id))
+            print(f'No Bag-of-Words input for appID = {query_app_id}')
             continue
 
         sims = index[model[vec_bow]]
@@ -67,7 +67,7 @@ def populate_database(
 
         second_best_similarity_score = second_best_similarity_score_as_tuple[1]
 
-        sim_dict[query_app_id] = dict()
+        sim_dict[query_app_id] = {}
         sim_dict[query_app_id]['app_id'] = second_best_matched_app_id
         sim_dict[query_app_id]['similarity'] = second_best_similarity_score
 
@@ -84,7 +84,7 @@ def populate_database(
 
 
 def load_sim_dict():
-    with open(get_unique_games_file_name(), 'r') as f:
+    with open(get_unique_games_file_name()) as f:
         sim_dict = json.load(f)
 
     return sim_dict
@@ -174,7 +174,7 @@ def main(
 
     if update_sim_dict:
         query_app_ids = list(
-            set(app_ids).intersection(int(app_id) for app_id in game_names.keys()),
+            set(app_ids).intersection(int(app_id) for app_id in game_names),
         )
         query_app_ids = sorted(query_app_ids, key=int)
 
