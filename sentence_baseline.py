@@ -4,30 +4,60 @@ import logging
 
 import spacy
 from gensim.corpora import Dictionary
-from gensim.models import TfidfModel, LsiModel, RpModel, LdaModel, HdpModel, KeyedVectors, Word2Vec
+from gensim.models import (
+    TfidfModel,
+    LsiModel,
+    RpModel,
+    LdaModel,
+    HdpModel,
+    KeyedVectors,
+    Word2Vec,
+)
 from gensim.models import WordEmbeddingSimilarityIndex
-from gensim.similarities import MatrixSimilarity, SparseTermSimilarityMatrix, SoftCosineSimilarity
+from gensim.similarities import (
+    MatrixSimilarity,
+    SparseTermSimilarityMatrix,
+    SoftCosineSimilarity,
+)
 from spacy.tokens import Doc
 
 from benchmark_utils import load_benchmarked_app_ids, print_ranking, get_app_name
 from doc2vec_model import reformat_similarity_scores_for_doc2vec
-from sentence_models import print_most_similar_sentences, filter_out_words_not_in_vocabulary
+from sentence_models import (
+    print_most_similar_sentences,
+    filter_out_words_not_in_vocabulary,
+)
 from utils import load_tokens, load_game_names
 
 
-def main(chosen_model_no=0, num_items_displayed=10, use_spacy=False, use_soft_cosine_similarity=False,
-         num_topics=None, no_below=5, no_above=0.5, normalize_vectors=False):
-    logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+def main(
+    chosen_model_no=0,
+    num_items_displayed=10,
+    use_spacy=False,
+    use_soft_cosine_similarity=False,
+    num_topics=None,
+    no_below=5,
+    no_above=0.5,
+    normalize_vectors=False,
+):
+    logging.basicConfig(
+        format='%(asctime)s : %(levelname)s : %(message)s',
+        level=logging.INFO,
+    )
 
     if num_topics is None:
         num_topics = 100
 
     possible_model_names = [
         'tf_idf',  # 0
-        'lsi_bow', 'lsi_tf_idf',  # 1, 2
-        'rp_bow', 'rp_tf_idf',  # 3, 4
-        'lda_bow', 'lda_tf_idf',  # 5, 6
-        'hdp_bow', 'hdp_tf_idf',  # 7, 8
+        'lsi_bow',
+        'lsi_tf_idf',  # 1, 2
+        'rp_bow',
+        'rp_tf_idf',  # 3, 4
+        'lda_bow',
+        'lda_tf_idf',  # 5, 6
+        'hdp_bow',
+        'hdp_tf_idf',  # 7, 8
         'word2vec',  # 9
     ]
     chosen_model_name = possible_model_names[chosen_model_no]
@@ -96,7 +126,10 @@ def main(chosen_model_no=0, num_items_displayed=10, use_spacy=False, use_soft_co
 
             print('Loading Word2Vec based on Google News')
             # Warning: this takes a lot of time and uses a ton of RAM!
-            wv = KeyedVectors.load_word2vec_format('data/GoogleNews-vectors-negative300.bin.gz', binary=True)
+            wv = KeyedVectors.load_word2vec_format(
+                'data/GoogleNews-vectors-negative300.bin.gz',
+                binary=True,
+            )
         else:
             if use_spacy:
                 print('Using Word2Vec with spaCy')
@@ -118,11 +151,20 @@ def main(chosen_model_no=0, num_items_displayed=10, use_spacy=False, use_soft_co
 
     if chosen_model_name != 'word2vec':
         if not use_soft_cosine_similarity:
-            index = MatrixSimilarity(model[pre_processed_corpus], num_best=10, num_features=len(dct))
+            index = MatrixSimilarity(
+                model[pre_processed_corpus],
+                num_best=10,
+                num_features=len(dct),
+            )
         else:
             w2v_model = Word2Vec(documents)
             similarity_index = WordEmbeddingSimilarityIndex(w2v_model.wv)
-            similarity_matrix = SparseTermSimilarityMatrix(similarity_index, dct, tfidf_model, nonzero_limit=100)
+            similarity_matrix = SparseTermSimilarityMatrix(
+                similarity_index,
+                dct,
+                tfidf_model,
+                nonzero_limit=100,
+            )
             index = SoftCosineSimilarity(model[pre_processed_corpus], similarity_matrix)
     else:
         index = None
@@ -134,8 +176,14 @@ def main(chosen_model_no=0, num_items_displayed=10, use_spacy=False, use_soft_co
     matches_as_app_ids = []
 
     for query_count, query_app_id in enumerate(query_app_ids):
-        print('[{}/{}] Query appID: {} ({})'.format(query_count + 1, len(query_app_ids),
-                                                    query_app_id, get_app_name(query_app_id, game_names)))
+        print(
+            '[{}/{}] Query appID: {} ({})'.format(
+                query_count + 1,
+                len(query_app_ids),
+                query_app_id,
+                get_app_name(query_app_id, game_names),
+            ),
+        )
 
         query = steam_tokens[str(query_app_id)]
 
@@ -157,7 +205,9 @@ def main(chosen_model_no=0, num_items_displayed=10, use_spacy=False, use_soft_co
                 sims = enumerate(sims)
 
             similarity_scores_as_tuples = [(str(app_ids[i]), sim) for (i, sim) in sims]
-            similarity_scores = reformat_similarity_scores_for_doc2vec(similarity_scores_as_tuples)
+            similarity_scores = reformat_similarity_scores_for_doc2vec(
+                similarity_scores_as_tuples,
+            )
         else:
             if use_spacy:
                 similarity_scores = {}
@@ -166,7 +216,10 @@ def main(chosen_model_no=0, num_items_displayed=10, use_spacy=False, use_soft_co
                     spacy_reference = Doc(nlp.vocab, reference_sentence)
                     similarity_scores[app_id] = spacy_query.similarity(spacy_reference)
             else:
-                query_sentence = filter_out_words_not_in_vocabulary(query, index2word_set)
+                query_sentence = filter_out_words_not_in_vocabulary(
+                    query,
+                    index2word_set,
+                )
 
                 similarity_scores = {}
 
@@ -177,32 +230,48 @@ def main(chosen_model_no=0, num_items_displayed=10, use_spacy=False, use_soft_co
                     counter += 1
 
                     if (counter % 1000) == 0:
-                        print('[{}/{}] appID = {} ({})'.format(counter, num_games, app_id, game_names[app_id]))
+                        print(
+                            '[{}/{}] appID = {} ({})'.format(
+                                counter,
+                                num_games,
+                                app_id,
+                                game_names[app_id],
+                            ),
+                        )
 
                     reference_sentence = steam_tokens[app_id]
-                    reference_sentence = filter_out_words_not_in_vocabulary(reference_sentence, index2word_set)
+                    reference_sentence = filter_out_words_not_in_vocabulary(
+                        reference_sentence,
+                        index2word_set,
+                    )
 
                     try:
-                        similarity_scores[app_id] = wv.n_similarity(query_sentence, reference_sentence)
+                        similarity_scores[app_id] = wv.n_similarity(
+                            query_sentence,
+                            reference_sentence,
+                        )
                     except ZeroDivisionError:
                         similarity_scores[app_id] = 0
 
-        similar_app_ids = print_most_similar_sentences(similarity_scores, num_items_displayed=num_items_displayed,
-                                                       verbose=False)
+        similar_app_ids = print_most_similar_sentences(
+            similarity_scores,
+            num_items_displayed=num_items_displayed,
+            verbose=False,
+        )
         matches_as_app_ids.append(similar_app_ids)
 
-    print_ranking(query_app_ids,
-                  matches_as_app_ids,
-                  only_print_banners=True)
+    print_ranking(query_app_ids, matches_as_app_ids, only_print_banners=True)
 
     return
 
 
 if __name__ == '__main__':
-    main(chosen_model_no=0,
-         use_spacy=False,
-         use_soft_cosine_similarity=False,
-         num_topics=None,
-         no_below=5,
-         no_above=0.5,
-         normalize_vectors=False)
+    main(
+        chosen_model_no=0,
+        use_spacy=False,
+        use_soft_cosine_similarity=False,
+        num_topics=None,
+        no_below=5,
+        no_above=0.5,
+        normalize_vectors=False,
+    )

@@ -16,7 +16,9 @@ def train_word_model_on_steam_tokens(model=None, steam_tokens=None, num_epochs=1
     documents = list(steam_tokens.values())
 
     if model is None:
-        model = Word2Vec(documents)  # training already happens here, due to the 'documents' argument!
+        model = Word2Vec(
+            documents,
+        )  # training already happens here, due to the 'documents' argument!
 
     model.train(documents, total_examples=len(documents), epochs=num_epochs)
 
@@ -39,8 +41,12 @@ def get_word_model_vocabulary(model):
     return index2word_set
 
 
-def compute_similarity_using_word2vec_model(query_word, steam_tokens=None, model=None,
-                                            enforce_training=False):
+def compute_similarity_using_word2vec_model(
+    query_word,
+    steam_tokens=None,
+    model=None,
+    enforce_training=False,
+):
     if steam_tokens is None:
         steam_tokens = load_tokens()
 
@@ -50,16 +56,24 @@ def compute_similarity_using_word2vec_model(query_word, steam_tokens=None, model
             model = Word2Vec.load(get_word_model_file_name())
 
             if enforce_training:
-                model = train_word_model_on_steam_tokens(model=model, steam_tokens=steam_tokens)
+                model = train_word_model_on_steam_tokens(
+                    model=model,
+                    steam_tokens=steam_tokens,
+                )
 
         except FileNotFoundError:
             print('Training Word2Vec model from scratch.')
-            model = train_word_model_on_steam_tokens(model=None, steam_tokens=steam_tokens)
+            model = train_word_model_on_steam_tokens(
+                model=None,
+                steam_tokens=steam_tokens,
+            )
 
     if query_word in get_word_model_vocabulary(model):
         similar_words = test_word(model, query_word)
     else:
-        print('The word {} is not part of the word model vocabulary.'.format(query_word))
+        print(
+            'The word {} is not part of the word model vocabulary.'.format(query_word),
+        )
         similar_words = None
 
     return similar_words

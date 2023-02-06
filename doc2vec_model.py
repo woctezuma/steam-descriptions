@@ -22,7 +22,6 @@ def get_tag_prefix():
 
 def read_corpus(steam_tokens, game_tags=None, include_app_ids=True):
     for app_id, tokens in steam_tokens.items():
-
         doc_tag = []
 
         if include_app_ids:
@@ -39,7 +38,10 @@ def read_corpus(steam_tokens, game_tags=None, include_app_ids=True):
         yield doc2vec.TaggedDocument(tokens, doc_tag)
 
 
-def reformat_similarity_scores_for_doc2vec(similarity_scores_as_tuples, game_names=None):
+def reformat_similarity_scores_for_doc2vec(
+    similarity_scores_as_tuples,
+    game_names=None,
+):
     if game_names is None:
         game_names, _ = load_game_names()
 
@@ -48,7 +50,7 @@ def reformat_similarity_scores_for_doc2vec(similarity_scores_as_tuples, game_nam
     similarity_scores = dict()
     for app_id, similarity_value in similarity_scores_as_tuples:
         if app_id.startswith(get_tag_prefix()):
-            app_id = app_id[len(get_tag_prefix()):]
+            app_id = app_id[len(get_tag_prefix()) :]
 
         similarity_scores[str(app_id)] = similarity_value
 
@@ -71,7 +73,9 @@ def train_doc_model_on_steam_tokens(model=None, steam_tokens=None, num_epochs=10
     documents = list(read_corpus(steam_tokens))
 
     if model is None:
-        model = doc2vec.Doc2Vec(documents)  # training happens with 5 epochs (default) here
+        model = doc2vec.Doc2Vec(
+            documents,
+        )  # training happens with 5 epochs (default) here
 
     start = time()
     model.train(documents, total_examples=len(documents), epochs=num_epochs)
@@ -82,9 +86,15 @@ def train_doc_model_on_steam_tokens(model=None, steam_tokens=None, num_epochs=10
     return model
 
 
-def compute_similarity_using_doc2vec_model(query_app_id, steam_tokens=None, model=None,
-                                           verbose=False,
-                                           enforce_training=False, avoid_inference=False, num_items_displayed=10):
+def compute_similarity_using_doc2vec_model(
+    query_app_id,
+    steam_tokens=None,
+    model=None,
+    verbose=False,
+    enforce_training=False,
+    avoid_inference=False,
+    num_items_displayed=10,
+):
     if steam_tokens is None:
         steam_tokens = load_tokens()
 
@@ -94,49 +104,77 @@ def compute_similarity_using_doc2vec_model(query_app_id, steam_tokens=None, mode
             model = doc2vec.Doc2Vec.load(get_doc_model_file_name())
 
             if enforce_training:
-                model = train_doc_model_on_steam_tokens(model=model, steam_tokens=steam_tokens)
+                model = train_doc_model_on_steam_tokens(
+                    model=model,
+                    steam_tokens=steam_tokens,
+                )
 
         except FileNotFoundError:
             print('Training Doc2Vec model from scratch.')
-            model = train_doc_model_on_steam_tokens(model=None, steam_tokens=steam_tokens)
+            model = train_doc_model_on_steam_tokens(
+                model=None,
+                steam_tokens=steam_tokens,
+            )
 
     if avoid_inference:
         if verbose:
             print('Finding most similar documents based on the query appID.')
         # For games which are part of the training corpus, we do not need to call model.infer_vector()
 
-        similarity_scores_as_tuples = model.docvecs.most_similar(positive=get_tag_prefix() + str(query_app_id),
-                                                                 topn=num_items_displayed)
+        similarity_scores_as_tuples = model.docvecs.most_similar(
+            positive=get_tag_prefix() + str(query_app_id),
+            topn=num_items_displayed,
+        )
     else:
         if verbose:
-            print('Finding most similar documents based on an inferred vector, which represents the query document.')
+            print(
+                'Finding most similar documents based on an inferred vector, which represents the query document.',
+            )
         query = steam_tokens[query_app_id]
         # Caveat: « Subsequent calls to this function may infer different representations for the same document. »
         # Reference: https://radimrehurek.com/gensim/models/doc2vec.html#gensim.models.doc2vec.Doc2Vec.infer_vector
         inferred_vector = model.infer_vector(query)
         similarity_scores_as_tuples = model.docvecs.most_similar([inferred_vector])
 
-    similarity_scores = reformat_similarity_scores_for_doc2vec(similarity_scores_as_tuples)
-    print_most_similar_sentences(similarity_scores, num_items_displayed=num_items_displayed)
+    similarity_scores = reformat_similarity_scores_for_doc2vec(
+        similarity_scores_as_tuples,
+    )
+    print_most_similar_sentences(
+        similarity_scores,
+        num_items_displayed=num_items_displayed,
+    )
 
     return similarity_scores
 
 
 def check_analogy(model, pos, neg, num_items_displayed=10):
-    similarity_scores_as_tuples = model.docvecs.most_similar(positive=[get_tag_prefix() + p for p in pos],
-                                                             negative=[get_tag_prefix() + n for n in neg],
-                                                             topn=num_items_displayed)
+    similarity_scores_as_tuples = model.docvecs.most_similar(
+        positive=[get_tag_prefix() + p for p in pos],
+        negative=[get_tag_prefix() + n for n in neg],
+        topn=num_items_displayed,
+    )
 
-    similarity_scores = reformat_similarity_scores_for_doc2vec(similarity_scores_as_tuples)
+    similarity_scores = reformat_similarity_scores_for_doc2vec(
+        similarity_scores_as_tuples,
+    )
     print_most_similar_sentences(similarity_scores, num_items_displayed)
 
     return
 
 
-def apply_pipeline(train_from_scratch=True, avoid_inference=False, shuffle_corpus=True,
-                   include_genres=False, include_categories=True, include_app_ids=True,
-                   verbose=False):
-    logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+def apply_pipeline(
+    train_from_scratch=True,
+    avoid_inference=False,
+    shuffle_corpus=True,
+    include_genres=False,
+    include_categories=True,
+    include_app_ids=True,
+    verbose=False,
+):
+    logging.basicConfig(
+        format='%(asctime)s : %(levelname)s : %(message)s',
+        level=logging.INFO,
+    )
 
     game_names, game_tags = load_game_names(include_genres, include_categories)
 
@@ -153,12 +191,14 @@ def apply_pipeline(train_from_scratch=True, avoid_inference=False, shuffle_corpu
 
     if train_from_scratch:
         print('Creating a new Doc2Vec model from scratch.')
-        model = doc2vec.Doc2Vec(documents,
-                                vector_size=100,
-                                window=5,
-                                min_count=5,
-                                epochs=20,
-                                workers=multiprocessing.cpu_count())
+        model = doc2vec.Doc2Vec(
+            documents,
+            vector_size=100,
+            window=5,
+            min_count=5,
+            epochs=20,
+            workers=multiprocessing.cpu_count(),
+        )
 
         # NB: Do not follow the piece of advice given in https://rare-technologies.com/doc2vec-tutorial/
         # « I have obtained better results by iterating over the data several times and either:
@@ -175,7 +215,6 @@ def apply_pipeline(train_from_scratch=True, avoid_inference=False, shuffle_corpu
     # Test doc2vec
 
     if verbose:
-
         try:
             # Spelunky + (Slay the Spire) - (Dream Quest)
             check_analogy(model, pos=['239350', '646570'], neg=['557410'])
@@ -188,13 +227,25 @@ def apply_pipeline(train_from_scratch=True, avoid_inference=False, shuffle_corpu
         except TypeError:
             pass
 
-        query_app_ids = ['620', '364470', '504230', '583950', '646570', '863550', '794600']
+        query_app_ids = [
+            '620',
+            '364470',
+            '504230',
+            '583950',
+            '646570',
+            '863550',
+            '794600',
+        ]
 
         for query_app_id in query_app_ids:
             print('Query appID: {} ({})'.format(query_app_id, game_names[query_app_id]))
-            compute_similarity_using_doc2vec_model(query_app_id, steam_tokens, model,
-                                                   avoid_inference=avoid_inference,
-                                                   num_items_displayed=10)
+            compute_similarity_using_doc2vec_model(
+                query_app_id,
+                steam_tokens,
+                model,
+                avoid_inference=avoid_inference,
+                num_items_displayed=10,
+            )
 
         # Check the relevance of the corresponding word2vec
         for query_word in ['anime', 'fun', 'violent']:
@@ -210,18 +261,35 @@ def apply_pipeline(train_from_scratch=True, avoid_inference=False, shuffle_corpu
         for query_tag in tag_entity.intersection(query_tags):
             for query_app_id in query_app_ids:
                 try:
-                    sim = model.docvecs.similarity(get_tag_prefix() + query_app_id, query_tag)
-                    print('Similarity = {:.0%} for tag {} vs. appID {} ({})'.format(sim, query_tag, query_app_id,
-                                                                                    game_names[query_app_id]))
+                    sim = model.docvecs.similarity(
+                        get_tag_prefix() + query_app_id,
+                        query_tag,
+                    )
+                    print(
+                        'Similarity = {:.0%} for tag {} vs. appID {} ({})'.format(
+                            sim,
+                            query_tag,
+                            query_app_id,
+                            game_names[query_app_id],
+                        ),
+                    )
                 except KeyError:
                     pass
 
         num_items_displayed = 3
         for query_tag in tag_entity:
             print('\nTag: {}'.format(query_tag))
-            similarity_scores_as_tuples = model.docvecs.most_similar(positive=query_tag, topn=num_items_displayed)
-            similarity_scores = reformat_similarity_scores_for_doc2vec(similarity_scores_as_tuples)
-            print_most_similar_sentences(similarity_scores, num_items_displayed=num_items_displayed)
+            similarity_scores_as_tuples = model.docvecs.most_similar(
+                positive=query_tag,
+                topn=num_items_displayed,
+            )
+            similarity_scores = reformat_similarity_scores_for_doc2vec(
+                similarity_scores_as_tuples,
+            )
+            print_most_similar_sentences(
+                similarity_scores,
+                num_items_displayed=num_items_displayed,
+            )
 
     # Top 100
 
@@ -235,14 +303,22 @@ def apply_pipeline(train_from_scratch=True, avoid_inference=False, shuffle_corpu
     doc_tags = list(model.docvecs.doctags.keys())
 
     init_indices = np.array(range(len(doc_tags)))
-    bool_indices_to_remove = list(map(lambda x: not x.startswith(get_tag_prefix()), doc_tags))
+    bool_indices_to_remove = list(
+        map(lambda x: not x.startswith(get_tag_prefix()), doc_tags),
+    )
     indices_to_remove = init_indices[bool_indices_to_remove]
     label_database = np.delete(label_database, indices_to_remove, axis=0)
 
-    app_ids = [int(doc_tag[len(get_tag_prefix()):]) for doc_tag in doc_tags
-               if doc_tag.startswith(get_tag_prefix())]
+    app_ids = [
+        int(doc_tag[len(get_tag_prefix()) :])
+        for doc_tag in doc_tags
+        if doc_tag.startswith(get_tag_prefix())
+    ]
 
-    knn = prepare_knn_search(label_database, use_cosine_similarity=use_cosine_similarity)
+    knn = prepare_knn_search(
+        label_database,
+        use_cosine_similarity=use_cosine_similarity,
+    )
 
     query_des = None
     for query_app_id in query_app_ids:
@@ -266,10 +342,12 @@ def apply_pipeline(train_from_scratch=True, avoid_inference=False, shuffle_corpu
     # From feature matches to appID matches
     matches_as_app_ids = transform_matches_to_app_ids(matches, app_ids)
 
-    print_ranking(query_app_ids,
-                  matches_as_app_ids,
-                  num_elements_displayed=num_neighbors,
-                  only_print_banners=only_print_banners)
+    print_ranking(
+        query_app_ids,
+        matches_as_app_ids,
+        num_elements_displayed=num_neighbors,
+        only_print_banners=only_print_banners,
+    )
 
     return
 
@@ -281,5 +359,11 @@ def get_doc_model_entity(model):
 
 
 if __name__ == '__main__':
-    apply_pipeline(train_from_scratch=True, avoid_inference=False, shuffle_corpus=True,
-                   include_genres=False, include_categories=False, include_app_ids=True)
+    apply_pipeline(
+        train_from_scratch=True,
+        avoid_inference=False,
+        shuffle_corpus=True,
+        include_genres=False,
+        include_categories=False,
+        include_app_ids=True,
+    )

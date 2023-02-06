@@ -13,12 +13,16 @@ def get_embedding_file_name_prefix():
 
 
 def get_embedded_description_file_name():
-    embedded_description_file_name = get_data_folder() + get_embedding_file_name_prefix() + 'features.npy'
+    embedded_description_file_name = (
+        get_data_folder() + get_embedding_file_name_prefix() + 'features.npy'
+    )
     return embedded_description_file_name
 
 
 def get_embedding_app_id_file_name():
-    embedding_app_id_file_name = get_data_folder() + get_embedding_file_name_prefix() + 'appids.txt'
+    embedding_app_id_file_name = (
+        get_data_folder() + get_embedding_file_name_prefix() + 'appids.txt'
+    )
     return embedding_app_id_file_name
 
 
@@ -26,7 +30,9 @@ def load_embedding_app_ids():
     with open(get_embedding_app_id_file_name(), 'r', encoding='utf-8') as f:
         app_id_list_as_str = f.readlines()[0].strip()
 
-    app_id_list = [int(app_id.strip('\'')) for app_id in app_id_list_as_str.strip('[]').split(', ')]
+    app_id_list = [
+        int(app_id.strip('\'')) for app_id in app_id_list_as_str.strip('[]').split(', ')
+    ]
 
     return app_id_list
 
@@ -94,7 +100,6 @@ def transform_matches_to_app_ids(matches, app_ids=None):
 
 def print_formatted_knn_search_results(formatted_results, query_app_id=None):
     for counter, ranking in enumerate(formatted_results):
-
         if query_app_id is not None:
             print('\nQuery: {}'.format(query_app_id[counter]))
         else:
@@ -108,12 +113,14 @@ def print_formatted_knn_search_results(formatted_results, query_app_id=None):
     return
 
 
-def perform_knn_search_with_app_ids_as_input(query_app_ids,
-                                             label_database=None,
-                                             app_ids=None,
-                                             knn=None,
-                                             use_cosine_similarity=True,  # only taken into account if 'knn' is None
-                                             num_neighbors=10):
+def perform_knn_search_with_app_ids_as_input(
+    query_app_ids,
+    label_database=None,
+    app_ids=None,
+    knn=None,
+    use_cosine_similarity=True,  # only taken into account if 'knn' is None
+    num_neighbors=10,
+):
     if label_database is None:
         label_database = load_embedded_descriptions()
 
@@ -121,7 +128,10 @@ def perform_knn_search_with_app_ids_as_input(query_app_ids,
         app_ids = load_embedding_app_ids()
 
     if knn is None:
-        knn = prepare_knn_search(label_database, use_cosine_similarity=use_cosine_similarity)
+        knn = prepare_knn_search(
+            label_database,
+            use_cosine_similarity=use_cosine_similarity,
+        )
 
     # From query appID to query feature vector
     query_des = get_query_descriptor(query_app_ids, label_database, app_ids)
@@ -142,11 +152,15 @@ if __name__ == '__main__':
     num_neighbors = 10
     only_print_banners = True
 
-    matches_as_app_ids = perform_knn_search_with_app_ids_as_input(query_app_ids,
-                                                                  use_cosine_similarity=use_cosine_similarity,
-                                                                  num_neighbors=num_neighbors)
+    matches_as_app_ids = perform_knn_search_with_app_ids_as_input(
+        query_app_ids,
+        use_cosine_similarity=use_cosine_similarity,
+        num_neighbors=num_neighbors,
+    )
 
-    print_ranking(query_app_ids,
-                  matches_as_app_ids,
-                  num_elements_displayed=num_neighbors,
-                  only_print_banners=only_print_banners)
+    print_ranking(
+        query_app_ids,
+        matches_as_app_ids,
+        num_elements_displayed=num_neighbors,
+        only_print_banners=only_print_banners,
+    )

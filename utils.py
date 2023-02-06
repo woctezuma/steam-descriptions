@@ -96,7 +96,14 @@ def compute_tokens(steam_sentences=None, save_to_disk=False, use_spacy=False):
         counter += 1
 
         if (counter % 1000) == 0:
-            print('[{}/{}] appID = {} ({})'.format(counter, num_games, app_id, game_data['name']))
+            print(
+                '[{}/{}] appID = {} ({})'.format(
+                    counter,
+                    num_games,
+                    app_id,
+                    game_data['name'],
+                ),
+            )
 
         if use_spacy:
             original_str = str(strip_tags(game_data['text']))
@@ -105,7 +112,11 @@ def compute_tokens(steam_sentences=None, save_to_disk=False, use_spacy=False):
 
             # Reference: https://nicschrading.com/project/Intro-to-NLP-with-spaCy/
             original_str = original_str.strip().replace('\n', ' ').replace('\r', ' ')
-            original_str = original_str.replace('&amp;', 'and').replace('&gt;', '>').replace('&lt;', '<')
+            original_str = (
+                original_str.replace('&amp;', 'and')
+                .replace('&gt;', '>')
+                .replace('&lt;', '<')
+            )
 
             doc = nlp(original_str)
 
@@ -113,7 +124,9 @@ def compute_tokens(steam_sentences=None, save_to_disk=False, use_spacy=False):
 
             # Keep only words (no numbers, no punctuation).
             # Lemmatize tokens, remove punctuation and remove stopwords.
-            doc = [token.lemma_ for token in doc if token.is_alpha and not token.is_stop]
+            doc = [
+                token.lemma_ for token in doc if token.is_alpha and not token.is_stop
+            ]
 
             # Add named entities, but only if they are a compound of more than word.
             relevant_entities = [str(entity) for entity in ents if len(entity) > 1]
@@ -121,7 +134,11 @@ def compute_tokens(steam_sentences=None, save_to_disk=False, use_spacy=False):
 
             game_tokens = doc
         else:
-            game_tokens = simple_preprocess(remove_stopwords(strip_tags(game_data['text'])), deacc=True, min_len=3)
+            game_tokens = simple_preprocess(
+                remove_stopwords(strip_tags(game_data['text'])),
+                deacc=True,
+                min_len=3,
+            )
 
         steam_tokens[app_id] = list(game_tokens)
 
