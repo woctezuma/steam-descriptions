@@ -106,8 +106,8 @@ Results are shown [here](https://github.com/woctezuma/steam-descriptions/wiki/Un
 
 <!-- Definitions -->
 
-[build]: <https://travis-ci.org/woctezuma/steam-descriptions>
-[build-image]: <https://travis-ci.org/woctezuma/steam-descriptions.svg?branch=master>
+[build]: <https://github.com/woctezuma/steam-descriptions/actions>
+[build-image]: <https://github.com/woctezuma/steam-descriptions/workflows/Python package/badge.svg?branch=master>
 
 [pyup]: <https://pyup.io/repos/github/woctezuma/steam-descriptions/>
 [dependency-image]: <https://pyup.io/repos/github/woctezuma/steam-descriptions/shield.svg>
