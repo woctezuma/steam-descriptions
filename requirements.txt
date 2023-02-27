@@ -1,6 +1,6 @@
 cython==0.29.33
 gensim==4.3.0
-pyemd==0.5.1
+pyemd==1.0.0
 numpy==1.24.2
 scikit-learn
 spacy==2.3.9
