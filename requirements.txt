@@ -3,7 +3,7 @@ gensim==4.3.3
 pyemd==1.0.0
 numpy==1.26.4
 scikit-learn
-spacy==3.7.5
+spacy==3.7.6
 steamspypi==1.1.1
 matplotlib==3.9.0
 steamtags==0.1.2
